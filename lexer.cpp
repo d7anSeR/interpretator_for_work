@@ -73,7 +73,7 @@ private:
 public:
 	Lexer(int curr_pos = 0, string curr_str = "") : curr_pos(curr_pos), curr_str(curr_str) {}
 	bool CheckLetter(char ichar) {
-		if (ichar >= 'a' && ichar <= 'z' || ichar >= 'A' && ichar <= 'Z' || ichar == '_')
+		if ((ichar >= 'a' && ichar <= 'z') || (ichar >= 'A' && ichar <= 'Z') || ichar == '_')
 			return true;
 		return false;
 	}
@@ -88,7 +88,7 @@ public:
 	string ReadWord() {
 		string result = "";
 		if (CheckLetter(curr_str[curr_pos])) {
-			while (curr_pos < curr_str.length() && CheckDigit(curr_str[curr_pos])) {
+			while (curr_pos < curr_str.length() && CheckDigitLetter(curr_str[curr_pos])) {
 				result += curr_str[curr_pos];
 				curr_pos++;
 			}
@@ -100,55 +100,51 @@ public:
 		if (CheckDigit(curr_str[curr_pos])) {
 			while (curr_pos < curr_str.length() && CheckDigitLetter(curr_str[curr_pos])) {
 				result += curr_str[curr_pos];
-			}
-		}
-		return result;
-	}
-	string ReadDoubleSign() {
-		string result = "";
-		if (curr_pos < curr_str.length() + 1) {
-			string temp_sign = "";
-			temp_sign += curr_str[curr_pos];
-			temp_sign += curr_str[curr_pos + 1];
-			if (
-				(temp_sign == "&&") ||
-				(temp_sign == "||") ||
-				(temp_sign == "<=") ||
-				(temp_sign == ">=") ||
-				(temp_sign == "==") ||
-				(temp_sign == "!=")
-				) {
-				result = temp_sign;
-				curr_pos += 2;
+				curr_pos++;
 			}
 		}
 		return result;
 	}
 	string ReadSign() {
 		string result = "";
-		if (curr_pos < curr_str.length() + 1) {
+		if (curr_pos < curr_str.length()) {
 			string temp_sign = "";
 			temp_sign += curr_str[curr_pos];
 			if (
 				(temp_sign == "(") ||
 				(temp_sign == ")") ||
-				(temp_sign == "<") ||
-				(temp_sign == ">") ||
-				(temp_sign == "=") ||
-				(temp_sign == "!") ||
+				(temp_sign == "<") && (curr_str[curr_pos + 1] != '=') ||
+				(temp_sign == ">") && (curr_str[curr_pos + 1] != '=') ||
+				(temp_sign == "=") && (curr_str[curr_pos + 1] != '=') ||
+				(temp_sign == "!") && (curr_str[curr_pos + 1] != '=') ||
 				(temp_sign == "{") ||
 				(temp_sign == "}") ||
 				(temp_sign == "[") ||
 				(temp_sign == "]") ||
-				(temp_sign == "+") ||
-				(temp_sign == "-") ||
+				(temp_sign == "+") && (curr_str[curr_pos + 1] != '=') ||
+				(temp_sign == "-") && (curr_str[curr_pos + 1] != '=') ||
 				(temp_sign == "^") ||
-				(temp_sign == "/") ||
-				(temp_sign == "*") ||
-				(temp_sign == "%")
+				(temp_sign == "/") && (curr_str[curr_pos + 1] != '=') ||
+				(temp_sign == "*") && (curr_str[curr_pos + 1] != '=') ||
+				(temp_sign == "%") ||
+				(temp_sign == ";")
 				) {
 				result = temp_sign;
 				curr_pos += 1;
+			}
+			else if ((curr_pos + 1 < curr_str.length()) && (
+				(temp_sign == "<") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == ">") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == "=") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == "!") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == "+") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == "-") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == "/") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == "*") && (curr_str[curr_pos + 1] == '=')
+				)) {
+				temp_sign += curr_str[curr_pos + 1];
+				result = temp_sign;
+				curr_pos += 2;
 			}
 		}
 		return result;
@@ -165,22 +161,14 @@ public:
 
 	Tel* ReadWordTel(const string& istr) {
 		curr_pos = 0;
+		curr_str = istr;
 		int len = istr.length();
 		Tel* result = new Tel();
 		while (curr_pos < len) {
-			if (ReadWord() != "") {
-				result->Add(ReadWord());
-			}
-			if (ReadWord() != "") {
-				result->Add(ReadWord());
-			}
+			result->Add(ReadWord());
+			result->Add(ReadDigit());
 			ReadTabs();
-			if (ReadSign() != "") {
-				result->Add(ReadSign());
-			}
-			if (ReadDoubleSign() != "") {
-				result->Add(ReadDoubleSign());
-			}
+			result->Add(ReadSign());
 		}
 		return result;
 	}
@@ -196,7 +184,7 @@ public:
 };
 
 int main() {
-	STR prog = "FUN (1 2) {A[2] = 3}";
+	STR prog = "FUN (1 2) {A[2] != 3; A[2] = 20; }";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	lexer.Print(pro, " ");
