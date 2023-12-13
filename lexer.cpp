@@ -4,19 +4,19 @@
 using namespace std;
 typedef string STR;
 enum TokenType {
-    KEYWORD, IDENTIFIER, INTEGER, FLOAT, LEFT_BRACE, RIGHT_BRACE, LEFT_PARENTHESIS, RIGHT_PARENTHESIS,
-    ASSIGNMENT_OPERATOR, LESS_THAN_TO_OPERATOR, MORE_THAN_TO_OPERATOR, 
-    LESS_THAN_OR_EQUAL_TO_OPERATOR, MORE_THAN_OR_EQUAL_TO_OPERATOR, ADDITION_OPERATOR, COMMA, COLON_OPERATOR,
-    SEMICOLON
+	KEYWORD, IDENTIFIER, INTEGER, FLOAT, LEFT_BRACE, RIGHT_BRACE, LEFT_PARENTHESIS, RIGHT_PARENTHESIS,
+	ASSIGNMENT_OPERATOR, LESS_THAN_TO_OPERATOR, MORE_THAN_TO_OPERATOR,
+	LESS_THAN_OR_EQUAL_TO_OPERATOR, MORE_THAN_OR_EQUAL_TO_OPERATOR, ADDITION_OPERATOR, COMMA, COLON_OPERATOR,
+	SEMICOLON
 };
 
 struct Token {
-    TokenType type;
-    string value;
+	TokenType type;
+	string value;
 };
 class Tel {
 public:
-	Tel():pre(NULL), next(NULL), last(NULL), first(NULL) {}
+	Tel() :pre(NULL), next(NULL), last(NULL), first(NULL) {}
 	STR text;
 	Tel* parent = NULL;
 	Tel* pre = NULL;
@@ -64,6 +64,31 @@ public:
 			Add(result);
 		}
 		return result;
+	}
+	void Brackets(Tel* iel,char s1, char s2) {
+		Tel* next_elem = NULL;
+		Tel* result = NULL;
+		while (iel != NULL) {
+			if (iel->first != NULL) {
+				Brackets(iel->first, s1, s2);
+				result = iel->next;
+			}
+			if (iel->text[0] == s1) {
+				if (next_elem != NULL)
+					next_elem = next_elem->Add(iel);
+				else
+					next_elem = iel;
+			}
+			else if (iel->text[0] == s2) {
+				iel->Delete();
+				next_elem = next_elem->parent;
+				if (next_elem == iel)
+					next_elem = NULL;
+			}
+			else if (next_elem != NULL)
+				next_elem->Add(iel);
+			iel = result;
+		}
 	}
 };
 class Lexer {
@@ -174,18 +199,23 @@ public:
 	}
 	void Print(Tel* el, string elem) {
 		Tel* iel = el;
-		while (iel != NULL){
+		while (iel != NULL) {
 			std::cout << elem << iel->text << endl;
 			if (iel->first != NULL)
-				Print(iel->first, elem+" ");
+				Print(iel->first, elem + " ");
 			iel = iel->next;
 		}
 	}
+	
 };
+
 
 int main() {
 	STR prog = "FUN (1 2) {A[2] != 3; A[2] = 20; }";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
+	Brackets(pro, '(', ')');
+	Brackets(pro, '{', '}');
+	Brackets(pro, '[', ']');
 	lexer.Print(pro, " ");
 }
