@@ -65,31 +65,7 @@ public:
 		}
 		return result;
 	}
-	void Brackets(Tel* iel,char s1, char s2) {
-		Tel* next_elem = NULL;
-		Tel* result = NULL;
-		while (iel != NULL) {
-			if (iel->first != NULL) {
-				Brackets(iel->first, s1, s2);
-				result = iel->next;
-			}
-			if (iel->text[0] == s1) {
-				if (next_elem != NULL)
-					next_elem = next_elem->Add(iel);
-				else
-					next_elem = iel;
-			}
-			else if (iel->text[0] == s2) {
-				iel->Delete();
-				next_elem = next_elem->parent;
-				if (next_elem == iel)
-					next_elem = NULL;
-			}
-			else if (next_elem != NULL)
-				next_elem->Add(iel);
-			iel = result;
-		}
-	}
+
 };
 class Lexer {
 private:
@@ -206,9 +182,34 @@ public:
 			iel = iel->next;
 		}
 	}
-	
-};
 
+};
+void Brackets(Tel* iel, char s1, char s2) {
+	Tel* next_elem = iel->first;
+	Tel* result = NULL;
+	Tel* mel = NULL;
+	while (next_elem != NULL) {
+		if (next_elem->first != NULL) {
+			Brackets(next_elem->first, s1, s2);
+		}
+		mel = next_elem->next;
+		if (next_elem->text[0] == s1) {
+			if (next_elem != NULL)
+				next_elem = next_elem->Add(iel);
+			else
+				next_elem = iel;
+		}
+		else if (next_elem->text[0] == s2) {
+			iel->Delete();
+			result = result->parent;
+			if (next_elem == iel)
+				next_elem = NULL;
+		}
+		else if (result != NULL)
+			next_elem->Add(next_elem);
+		next_elem = mel;
+	}
+}
 
 int main() {
 	STR prog = "FUN (1 2) {A[2] != 3; A[2] = 20; }";
