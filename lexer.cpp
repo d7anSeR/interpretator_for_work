@@ -4,25 +4,21 @@
 using namespace std;
 typedef string STR;
 enum TokenType {
-	KEYWORD, IDENTIFIER, INTEGER, FLOAT, LEFT_BRACE, RIGHT_BRACE, LEFT_PARENTHESIS, RIGHT_PARENTHESIS,
-	ASSIGNMENT_OPERATOR, LESS_THAN_TO_OPERATOR, MORE_THAN_TO_OPERATOR,
-	LESS_THAN_OR_EQUAL_TO_OPERATOR, MORE_THAN_OR_EQUAL_TO_OPERATOR, ADDITION_OPERATOR, COMMA, COLON_OPERATOR,
-	SEMICOLON
+
 };
 
-struct Token {
-	TokenType type;
-	string value;
-};
+class Lexer;
 class Tel {
-public:
-	Tel() :pre(NULL), next(NULL), last(NULL), first(NULL) {}
 	STR text;
+	TokenType token_type;
 	Tel* parent = NULL;
 	Tel* pre = NULL;
 	Tel* next = NULL;
 	Tel* first = NULL;
 	Tel* last = NULL;
+	friend class Lexer;
+public:
+	Tel() :pre(NULL), next(NULL), last(NULL), first(NULL) {}
 	Tel* Add(Tel* elem) {
 		elem->Delete();
 		if (first == NULL) {
@@ -207,6 +203,17 @@ public:
 			if (iel->first != NULL)
 				Print(iel->first, elem + " ");
 			iel = iel->next;
+		}
+	}
+	void ParamInFunc(Tel* iel, char ichar) {
+		Tel* next_elem = iel->first;
+		while (next_elem != NULL) {
+			if (next_elem->token_type == DIGIT)
+				if ((next_elem->next != 0) && (next_elem->next->text[0] == ichar))
+					next_elem->Add(next_elem->next);
+			if (next_elem->first != NULL)
+				ParamInFunc(next_elem, ichar);
+			next_elem = next_elem->next;
 		}
 	}
 
