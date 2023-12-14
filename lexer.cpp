@@ -40,20 +40,21 @@ public:
 		last = last->next;
 		return last;
 	}
-	Tel* Delete() {
-		if (parent != NULL) {
-			if (parent->last == this)
-				parent->last = pre;
-			if (parent->first == this)
-				parent->first = next;
-		}
-		if (pre != NULL)
-			pre->next = next;
-		if (next != NULL)
-			next->pre = pre;
-		next = NULL;
-		pre = NULL;
-		parent = NULL;
+	Tel* Delete() { // Удаляет элемент из списка 
+
+		if (parent != 0) // Если удаляемый элемент являеться последним в списке 
+			if (parent->last == this) parent->last = pre;
+
+		if (parent != 0) // Если удаляемый элемент являеться Первым в списке 
+			if (parent->first == this) parent->first = next;
+
+		if (pre != 0) pre->next = next;// Отсоеденяем от предыдыщего 
+		if (next != 0) next->pre = pre;// Отсоеденяем от следующего 
+
+		next = 0;
+		pre = 0;
+		parent = 0;
+
 		return this;
 	}
 	Tel* Add(STR istr) {
@@ -64,6 +65,32 @@ public:
 			Add(result);
 		}
 		return result;
+	}
+	void Brackets(char s1, char s2) {
+		Tel* next_elem = first;
+		Tel* result = NULL;
+		Tel* mel = NULL;
+		while (next_elem != NULL) {
+			/*while (next_elem->first != NULL) {
+				next_elem = next_elem->first;
+			}*/
+			mel = next_elem->next;
+			if (next_elem->text[0] == s1) {
+				if (result != NULL)
+					result = result->Add(next_elem);
+				else
+					result = next_elem;
+			}
+			else if (next_elem->text[0] == s2) {
+				next_elem->Delete();
+				result = result->parent;
+				if (result == this)
+					result = NULL;
+			}
+			else if (result != NULL)
+				result->Add(next_elem);
+			next_elem = mel;
+		}
 	}
 
 };
@@ -184,39 +211,13 @@ public:
 	}
 
 };
-void Brackets(Tel* iel, char s1, char s2) {
-	Tel* next_elem = iel->first;
-	Tel* result = NULL;
-	Tel* mel = NULL;
-	while (next_elem != NULL) {
-		if (next_elem->first != NULL) {
-			Brackets(next_elem->first, s1, s2);
-		}
-		mel = next_elem->next;
-		if (next_elem->text[0] == s1) {
-			if (next_elem != NULL)
-				next_elem = next_elem->Add(iel);
-			else
-				next_elem = iel;
-		}
-		else if (next_elem->text[0] == s2) {
-			iel->Delete();
-			result = result->parent;
-			if (next_elem == iel)
-				next_elem = NULL;
-		}
-		else if (result != NULL)
-			next_elem->Add(next_elem);
-		next_elem = mel;
-	}
-}
 
 int main() {
 	STR prog = "FUN (1 2) {A[2] != 3; A[2] = 20; }";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
-	Brackets(pro, '(', ')');
-	Brackets(pro, '{', '}');
-	Brackets(pro, '[', ']');
+	pro->Brackets('(', ')');
+	pro->Brackets('[', ']');
+	pro->Brackets('{', '}');
 	lexer.Print(pro, " ");
 }
