@@ -4,7 +4,7 @@
 using namespace std;
 typedef string STR;
 enum TokenType {
-
+	DIGIT, WORD, SIGN
 };
 
 class Lexer;
@@ -53,11 +53,12 @@ public:
 
 		return this;
 	}
-	Tel* Add(STR istr) {
+	Tel* Add(STR istr, TokenType type) {
 		Tel* result = NULL;
 		if (istr != "") {
 			result = new Tel();
 			result->text = istr;
+			result->token_type = type;
 			Add(result);
 		}
 		return result;
@@ -189,10 +190,10 @@ public:
 		int len = istr.length();
 		Tel* result = new Tel();
 		while (curr_pos < len) {
-			result->Add(ReadWord());
-			result->Add(ReadDigit());
+			result->Add(ReadWord(), WORD);
+			result->Add(ReadDigit(), DIGIT);
 			ReadTabs();
-			result->Add(ReadSign());
+			result->Add(ReadSign(), SIGN);
 		}
 		return result;
 	}
@@ -206,25 +207,30 @@ public:
 		}
 	}
 	void ParamInFunc(Tel* iel, char ichar) {
-		Tel* next_elem = iel->first;
-		while (next_elem != NULL) {
-			if (next_elem->token_type == DIGIT)
-				if ((next_elem->next != 0) && (next_elem->next->text[0] == ichar))
-					next_elem->Add(next_elem->next);
-			if (next_elem->first != NULL)
-				ParamInFunc(next_elem, ichar);
-			next_elem = next_elem->next;
+		Tel* next_elem_first = iel->first;
+		while (next_elem_first != NULL) {
+			Tel* next_elem_second = next_elem_first->first;
+			while (next_elem_second != NULL) {
+				if (next_elem_second->token_type == DIGIT)
+					if ((next_elem_second->next != NULL) && (next_elem_second->next->text[0] == ichar))
+						next_elem_second->Add(next_elem_second->next);
+				next_elem_second = next_elem_second->first;
+			}
+			next_elem_first = next_elem_first->next;
+
 		}
 	}
 
 };
 
 int main() {
-	STR prog = "FUN (1 2) {A[2] != 3; A[2] = 20; }";
+	STR prog = "FUN NAMEFUNC(1 2) {A[2] != 3; A[2] = 20; }";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('(', ')');
 	pro->Brackets('[', ']');
 	pro->Brackets('{', '}');
+	lexer.ParamInFunc(pro, '(');
+	lexer.ParamInFunc(pro, '{');
 	lexer.Print(pro, " ");
 }
