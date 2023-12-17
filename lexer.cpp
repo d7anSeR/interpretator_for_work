@@ -1,7 +1,7 @@
-#include <string>
 #include <map>
 #include <iostream>
 #include <math.h>
+#include <string>
 
 using namespace std;
 typedef string STR;
@@ -97,45 +97,55 @@ class Parser {
 private:
 	Tel* cur;
 public:
-	Parser(Tel* cur) :cur(cur) {}
+	Parser() {}
 	void Operation(Tel* node) {
 		try {
-			if (node->first != NULL && node->first->next != NULL) {
+			if (node->first != NULL) {
 				Operation(node->first);
-				Operation(node->first->next);
+			}
+			if (node->next != NULL) {
+				Operation(node->next);
+			}
+			if (node->first == NULL) {
+
 				if (node->first->token_type == "DIGIT_INT" && node->first->next->token_type == "DIGIT_INT")
 				{
 					if (node->text == "^")
-						node->result = pow(stoi(node->first->text), stoi(node->first->next->text));
+						node->result = to_string(pow(stoi(node->first->text), stoi(node->first->next->text)));
 					if (node->text == "%")
-						node->result = stoi(node->first->text) % stoi(node->first->next->text);
+						node->result = to_string(stoi(node->first->text) % stoi(node->first->next->text));
 					if (node->text == "*")
-						node->result = stoi(node->first->text) * stoi(node->first->next->text);
+						node->result = to_string(stoi(node->first->text) * stoi(node->first->next->text));
 					if (node->text == "/" && stoi(node->first->next->text) != 0)
-						node->result = stoi(node->first->text) / stoi(node->first->next->text);
+						node->result = to_string(stoi(node->first->text) / stoi(node->first->next->text));
 					if (node->text == "+")
-						node->result = stoi(node->first->text) + stoi(node->first->next->text);
+						node->result = to_string(stoi(node->first->text) + stoi(node->first->next->text));
 					if (node->text == "-")
-						node->result = stoi(node->first->text) - stoi(node->first->next->text);
+						node->result = to_string(stoi(node->first->text) - stoi(node->first->next->text));
 					node->token_type = "DIGIT_INT";
 				}
-				if ((node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_DOUBLE") ||
+				else if ((node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_DOUBLE") ||
 					(node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_INT") ||
 					(node->first->token_type == "DIGIT_INT" && node->first->next->token_type == "DIGIT_DOUBLE")
 					) {
 					if (node->text == "^")
-						node->result = pow(stod(node->first->text), stod(node->first->next->text));
+						node->result = to_string(pow(stod(node->first->text), stod(node->first->next->text)));
 					if (node->text == "%")
-						node->result = stoi(node->first->text) % stoi(node->first->next->text);
+						node->result = to_string(stoi(node->first->text) % stoi(node->first->next->text));
 					if (node->text == "*")
-						node->result = stod(node->first->text) * stod(node->first->next->text);
+						node->result = to_string(stod(node->first->text) * stod(node->first->next->text));
 					if (node->text == "/")
-						node->result = stod(node->first->text) / stod(node->first->next->text);
+						node->result = to_string(stod(node->first->text) / stod(node->first->next->text));
 					if (node->text == "+")
-						node->result = stod(node->first->text) + stod(node->first->next->text);
+						node->result = to_string(stod(node->first->text) + stod(node->first->next->text));
 					if (node->text == "-")
-						node->result = stod(node->first->text) - stod(node->first->next->text);
+						node->result = to_string(stod(node->first->text) - stod(node->first->next->text));
 					node->token_type = "DIGIT_DOUBLE";
+				}
+				else if (node->text == "(") {
+					Runs(node);
+					node->token_type = node->first->token_type;
+					node->result = node->first->result;
 				}
 				else
 					throw std::string{ "an attempt was made to perform an operation with numbers on other data types..." };
@@ -145,6 +155,19 @@ public:
 		}
 		catch (std::string error_message) {
 			std::cout << error_message << endl;
+		}
+
+	}
+	void Print(Tel* node) {
+		Tel* iel = node->first;
+		if (iel != NULL && iel->next->text == "(") {
+			Runs(iel->next);
+			Tel* elem = NULL;
+			if (iel->next != NULL) elem = iel->next->first;
+			while (elem != NULL) {
+				cout << elem->result;
+				elem = elem->next;
+			}
 		}
 
 	}
@@ -336,7 +359,7 @@ public:
 };
 
 int main() {
-	STR prog = "FUN NAMEFUNC((1+2)*3) {A[2] = 3.4; A = 2+0; }";
+	STR prog = "print( 1 + 2 * 3)";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
@@ -347,5 +370,7 @@ int main() {
 	lexer.SignInFirst(pro);
 	lexer.SignInSecond(pro);
 	lexer.AssignmentIn(pro);
-	lexer.Print(pro, " ");
+	Parser parser;
+	parser.Print(pro);
+	/*lexer.Print(pro, " ");*/
 }
