@@ -1,24 +1,29 @@
 #include <string>
+#include <map>
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 typedef string STR;
-enum TokenType {
-	DIGIT, WORD, SIGN
+std::map<unsigned, std::string> TokenType
+{
+	{1, "DIGIT_INT"}, {2, "DIGIT_DOUBLE"} , {3, "WORD"}, {4, "SIGN"}
 };
 
 class Lexer;
 class Tel {
-	STR text;
-	TokenType token_type;
+	STR text = "";
+	STR result = "";
+	STR token_type;
 	Tel* parent = NULL;
 	Tel* pre = NULL;
 	Tel* next = NULL;
 	Tel* first = NULL;
 	Tel* last = NULL;
 	friend class Lexer;
+	friend class Parser;
 public:
-	Tel() :pre(NULL), next(NULL), last(NULL), first(NULL) {}
+	Tel() : text(""), result(""), parent(NULL), pre(NULL), next(NULL), last(NULL), first(NULL) {}
 	Tel* Add(Tel* elem) {
 		elem->Delete();
 		if (first == NULL) {
@@ -53,7 +58,7 @@ public:
 
 		return this;
 	}
-	Tel* Add(STR istr, TokenType type) {
+	Tel* Add(STR istr, STR type) {
 		Tel* result = NULL;
 		if (istr != "") {
 			result = new Tel();
@@ -68,9 +73,6 @@ public:
 		Tel* result = NULL;
 		Tel* mel = NULL;
 		while (next_elem != NULL) {
-			/*while (next_elem->first != NULL) {
-				next_elem = next_elem->first;
-			}*/
 			mel = next_elem->next;
 			if (next_elem->text[0] == s1) {
 				if (result != NULL)
@@ -91,10 +93,76 @@ public:
 	}
 
 };
+class Parser {
+private:
+	Tel* cur;
+public:
+	Parser(Tel* cur) :cur(cur) {}
+	void Operation(Tel* node) {
+		try {
+			if (node->first != NULL && node->first->next != NULL) {
+				Operation(node->first);
+				Operation(node->first->next);
+				if (node->first->token_type == "DIGIT_INT" && node->first->next->token_type == "DIGIT_INT")
+				{
+					if (node->text == "^")
+						node->result = pow(stoi(node->first->text), stoi(node->first->next->text));
+					if (node->text == "%")
+						node->result = stoi(node->first->text) % stoi(node->first->next->text);
+					if (node->text == "*")
+						node->result = stoi(node->first->text) * stoi(node->first->next->text);
+					if (node->text == "/" && stoi(node->first->next->text) != 0)
+						node->result = stoi(node->first->text) / stoi(node->first->next->text);
+					if (node->text == "+")
+						node->result = stoi(node->first->text) + stoi(node->first->next->text);
+					if (node->text == "-")
+						node->result = stoi(node->first->text) - stoi(node->first->next->text);
+					node->token_type = "DIGIT_INT";
+				}
+				if ((node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_DOUBLE") ||
+					(node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_INT") ||
+					(node->first->token_type == "DIGIT_INT" && node->first->next->token_type == "DIGIT_DOUBLE")
+					) {
+					if (node->text == "^")
+						node->result = pow(stod(node->first->text), stod(node->first->next->text));
+					if (node->text == "%")
+						node->result = stoi(node->first->text) % stoi(node->first->next->text);
+					if (node->text == "*")
+						node->result = stod(node->first->text) * stod(node->first->next->text);
+					if (node->text == "/")
+						node->result = stod(node->first->text) / stod(node->first->next->text);
+					if (node->text == "+")
+						node->result = stod(node->first->text) + stod(node->first->next->text);
+					if (node->text == "-")
+						node->result = stod(node->first->text) - stod(node->first->next->text);
+					node->token_type = "DIGIT_DOUBLE";
+				}
+				else
+					throw std::string{ "an attempt was made to perform an operation with numbers on other data types..." };
+			}
+			else
+				throw std::string{ "an attempt was made to access the NULL pointer..." };
+		}
+		catch (std::string error_message) {
+			std::cout << error_message << endl;
+		}
+
+	}
+	void Runs(Tel* node) {
+		Tel* elem = node->first;
+		while (elem != NULL) {
+			Operation(elem);
+			elem = elem->next;
+		}
+
+	}
+
+};
 class Lexer {
 private:
 	int curr_pos = 0;
 	string curr_str = "";
+	friend class Parser;
 public:
 	Lexer(int curr_pos = 0, string curr_str = "") : curr_pos(curr_pos), curr_str(curr_str) {}
 	bool CheckLetter(char ichar) {
@@ -103,7 +171,7 @@ public:
 		return false;
 	}
 	bool CheckDigit(char ichar) {
-		if (ichar >= '0' && ichar <= '9')
+		if ((ichar >= '0' && ichar <= '9'))
 			return true;
 		return false;
 	}
@@ -123,7 +191,10 @@ public:
 	string ReadDigit() {
 		string result = "";
 		if (CheckDigit(curr_str[curr_pos])) {
-			while (curr_pos < curr_str.length() && CheckDigitLetter(curr_str[curr_pos])) {
+			while (curr_pos < curr_str.length() &&
+				(CheckDigitLetter(curr_str[curr_pos]) ||
+					(curr_str[curr_pos] == '.' && curr_pos != curr_str.length())
+					)) {
 				result += curr_str[curr_pos];
 				curr_pos++;
 			}
@@ -165,7 +236,8 @@ public:
 				(temp_sign == "+") && (curr_str[curr_pos + 1] == '=') ||
 				(temp_sign == "-") && (curr_str[curr_pos + 1] == '=') ||
 				(temp_sign == "/") && (curr_str[curr_pos + 1] == '=') ||
-				(temp_sign == "*") && (curr_str[curr_pos + 1] == '=')
+				(temp_sign == "*") && (curr_str[curr_pos + 1] == '=') ||
+				(temp_sign == ":") && (curr_str[curr_pos + 1] == '=')
 				)) {
 				temp_sign += curr_str[curr_pos + 1];
 				result = temp_sign;
@@ -190,19 +262,23 @@ public:
 		int len = istr.length();
 		Tel* result = new Tel();
 		while (curr_pos < len) {
-			result->Add(ReadWord(), WORD);
-			result->Add(ReadDigit(), DIGIT);
+			result->Add(ReadWord(), TokenType[3]);
+			std::string digit = ReadDigit();
+			if (digit.find(".") == true)
+				result->Add(digit, TokenType[2]);
+			else if (digit != "")
+				result->Add(digit, TokenType[1]);
 			ReadTabs();
-			result->Add(ReadSign(), SIGN);
+			result->Add(ReadSign(), TokenType[4]);
 		}
 		return result;
 	}
 	void Print(Tel* el, string elem) {
 		Tel* iel = el;
 		while (iel != NULL) {
-			std::cout << elem << iel->text << endl;
+			std::cout << elem << iel->text << " - " << iel->token_type << endl;
 			if (iel->first != NULL)
-				Print(iel->first, elem + " ");
+				Print(iel->first, elem + "    ");
 			iel = iel->next;
 		}
 	}
@@ -211,7 +287,7 @@ public:
 		while (next_elem_first != NULL) {
 			Tel* next_elem_second = next_elem_first->first;
 			while (next_elem_second != NULL) {
-				if (next_elem_second->token_type == DIGIT)
+				if (next_elem_second->token_type == TokenType[1])
 					if ((next_elem_second->next != NULL) && (next_elem_second->next->text[0] == ichar))
 						next_elem_second->Add(next_elem_second->next);
 				next_elem_second = next_elem_second->first;
@@ -220,17 +296,56 @@ public:
 
 		}
 	}
-
+	//void SignIn(Tel* iel) {
+	//	Tel* tmp = iel;
+	//	SignIn_(tmp);
+	//}
+	void SignInFirst(Tel* iel) {
+		Tel* elem = iel->first;
+		while (elem != NULL) {
+			if (elem->next != NULL && elem->pre != NULL && ((elem->text == "^") || (elem->text == "%") || (elem->text == "*") || (elem->text == "/"))) {
+				elem->Add(elem->pre);
+				elem->Add(elem->next);
+			}
+			if (elem->first != NULL) SignInFirst(elem);
+			elem = elem->next;
+		}
+	}
+	void SignInSecond(Tel* iel) {
+		Tel* elem = iel->first;
+		while (elem != NULL) {
+			if (elem->next != NULL && elem->pre != NULL && ((elem->text == "+") || (elem->text == "-"))) {
+				elem->Add(elem->pre);
+				elem->Add(elem->next);
+			}
+			if (elem->first != NULL) SignInSecond(elem);
+			elem = elem->next;
+		}
+	}
+	void AssignmentIn(Tel* iel) {
+		Tel* elem = iel->first;
+		while (elem != NULL) {
+			if (elem->next != NULL && elem->pre != NULL && (elem->text == ":=")) {
+				elem->Add(elem->pre);
+				elem->Add(elem->next);
+			}
+			if (elem->first != NULL) AssignmentIn(elem);
+			elem = elem->next;
+		}
+	}
 };
 
 int main() {
-	STR prog = "FUN NAMEFUNC(1 2) {A[2] != 3; A[2] = 20; }";
+	STR prog = "FUN NAMEFUNC((1+2)*3) {A[2] = 3.4; A = 2+0; }";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
-	pro->Brackets('(', ')');
 	pro->Brackets('[', ']');
+	pro->Brackets('(', ')');
 	pro->Brackets('{', '}');
 	lexer.ParamInFunc(pro, '(');
 	lexer.ParamInFunc(pro, '{');
+	lexer.SignInFirst(pro);
+	lexer.SignInSecond(pro);
+	lexer.AssignmentIn(pro);
 	lexer.Print(pro, " ");
 }
