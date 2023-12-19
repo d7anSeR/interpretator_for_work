@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string>
 #include <cstring>
+#include <stack>
 
 using namespace std;
 typedef string STR;
@@ -119,27 +120,306 @@ public:
 			if (node->first != NULL && node->first->next != NULL && node->first->next->first != NULL) {
 				Operation(node->first->next);
 			}
+
+
+
 			if (node->first != NULL) {
 				if (node->first->next != NULL)
 				{
-					if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+					if (node->text == "^")
+					{
+						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							Tel* result_second = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && result_second != NULL) {
+								node->text = to_string(pow(stoi(result_first->value), stoi(result_second->value)));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+
+						}
+						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL) {
+								node->text = to_string(pow(stoi(node->first->text), stoi(result_first->value)));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[1]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							if (result_first != NULL) {
+								node->text = to_string(pow(stoi(result_first->value), stoi(node->first->next->text)));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						if (node->pre != NULL)
+							node = node->pre;
+						else if (node->parent != NULL)
+						{
+							node = node->parent;
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+								node = node->parent;
+						}
+
+					}
+					else if (node->text == "%")
+					{
+						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							Tel* result_second = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && result_second != NULL) {
+								node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+
+						}
+						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(node->first->text) % stoi(result_first->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[1]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(result_first->value) % stoi(node->first->next->text));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						if (node->pre != NULL)
+							node = node->pre;
+						else if (node->parent != NULL)
+						{
+							node = node->parent;
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+								node = node->parent;
+						}
+
+					}
+					else if (node->text == "*")
+					{
+						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							Tel* result_second = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && result_second != NULL) {
+								node->text = to_string(stoi(result_first->value) * stoi(result_second->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+
+						}
+						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(node->first->text) * stoi(result_first->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[1]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(result_first->value) * stoi(node->first->next->text));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						if (node->pre != NULL)
+							node = node->pre;
+						else if (node->parent != NULL)
+						{
+							node = node->parent;
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+								node = node->parent;
+						}
+
+					}
+					else if (node->text == "/")
+					{
+						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							Tel* result_second = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && result_second != NULL) {
+								node->text = to_string(stoi(result_first->value) / stoi(result_second->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+
+						}
+						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && stoi(result_first->value) != 0) {
+								node->text = to_string(stoi(node->first->text) / stoi(result_first->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[1]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							if (result_first != NULL && stoi(node->first->next->text) != 0) {
+								node->text = to_string(stoi(result_first->value) / stoi(node->first->next->text));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						if (node->pre != NULL)
+							node = node->pre;
+						else if (node->parent != NULL)
+						{
+							node = node->parent;
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+								node = node->parent;
+						}
+
+					}
+					else if (node->text == "+")
+					{
+						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							Tel* result_second = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && result_second != NULL) {
+								node->text = to_string(stoi(result_first->value) + stoi(result_second->value)); node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+
+						}
+						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(node->first->text) + stoi(result_first->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[1]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(result_first->value) + stoi(node->first->next->text));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						if (node->pre != NULL)
+							node = node->pre;
+						else if (node->parent != NULL)
+						{
+							node = node->parent;
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+								node = node->parent;
+						}
+
+					}
+					else if (node->text == "-")
+					{
+						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							Tel* result_second = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL && result_second != NULL) {
+								node->text = to_string(stoi(result_first->value) - stoi(result_second->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+
+						}
+						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[3]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->next->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(node->first->text) - stoi(result_first->value));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[1]) {
+							Tel* tmp_node = cur;
+							Tel* result_first = FindVal(tmp_node, node->first->text);
+							if (result_first != NULL) {
+								node->text = to_string(stoi(result_first->value) - stoi(node->first->next->text));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+						if (node->pre != NULL)
+							node = node->pre;
+						else if (node->parent != NULL)
+						{
+							node = node->parent;
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+								node = node->parent;
+						}
+
+					}
+
+					else if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
 						Tel* tmp_node = cur;
 						Tel* result_first = FindVal(tmp_node, node->first->text);
 						Tel* result_second = FindVal(tmp_node, node->first->next->text);
 						if (result_first != NULL && result_second != NULL) {
 							if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
 								if (node->text == "^")
-									node->text = to_string(pow(stoi(result_first->text), stoi(result_second->text)));
+									node->text = to_string(pow(stoi(result_first->value), stoi(result_second->value)));
 								if (node->text == "%")
-									node->text = to_string(stoi(result_first->text) % stoi(result_second->text));
+									node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
 								if (node->text == "*")
-									node->text = to_string(stoi(result_first->text) * stoi(result_second->text));
-								if (node->text == "/" && stoi(result_second->text) != 0)
-									node->text = to_string(stoi(result_first->text) / stoi(result_second->text));
+									node->text = to_string(stoi(result_first->value) * stoi(result_second->value));
+								if (node->text == "/" && stoi(result_second->value) != 0)
+									node->text = to_string(stoi(result_first->value) / stoi(result_second->value));
 								if (node->text == "+")
-									node->text = to_string(stoi(result_first->text) + stoi(result_second->text));
+									node->text = to_string(stoi(result_first->value) + stoi(result_second->value));
 								if (node->text == "-")
-									node->text = to_string(stoi(result_first->text) - stoi(result_second->text));
+									node->text = to_string(stoi(result_first->value) - stoi(result_second->value));
 								node->token_type = TokenType[1];
 								node->first->next->Delete();
 								node->first->Delete();
@@ -163,6 +443,16 @@ public:
 								node->token_type = TokenType[2];
 								node->first->next->Delete();
 								node->first->Delete();
+							}
+							if (node->pre != NULL)
+								node = node->pre;
+							else if (node->parent != NULL)
+							{
+								node = node->parent;
+								if (node->pre != NULL)
+									node = node->pre;
+								else if (node->parent != NULL)
+									node = node->parent;
 							}
 						}
 					}
@@ -205,10 +495,12 @@ public:
 						node->first->next->Delete();
 						node->first->Delete();
 					}
-					else if (node->first->text == "(") {
-						Runs(node);
-						node->token_type = node->first->token_type;
-						node->result = node->first->result;
+					else if (node->first != NULL) {
+						if (node->first->text == "(") {
+							Runs(node);
+							node->token_type = node->first->token_type;
+							node->result = node->first->result;
+						}
 					}
 					else
 						throw std::string{ "an attempt was made to perform an operation with numbers on other data types..." };
@@ -219,8 +511,6 @@ public:
 					node->first->Delete();
 				}
 			}
-			else
-				throw std::string{ "an attempt was made to access the NULL pointer..." };
 		}
 		catch (std::string error_message) {
 			std::cout << error_message << endl;
@@ -228,26 +518,36 @@ public:
 
 	}
 	Tel* FindVal(Tel* node, std::string ichar) {
-		Tel* elem = node->first;
-		if (elem != NULL) {
-			while (elem != NULL) {
-				Tel* elem_s = elem;
-				while (elem_s != NULL) {
-					if (elem_s->text == ichar)
-						return elem_s;
-					elem_s = elem_s->first;
+		Tel* result = NULL;
+		while (node != NULL) {
+			if (node->first != NULL) {
+				if (node->text == ichar) {
+					result = node;
+					break;
 				}
-				elem_s = elem;
-				while (elem_s != NULL) {
-					if (elem_s->text == ichar)
-						return elem_s;
-					elem_s = elem_s->next;
-
+				else {
+					result = FindVal(node->first, ichar);
+					if (result != NULL) {
+						break;
+					}
 				}
-				elem = elem->next;
 			}
+			node = node->next;
 		}
+
+		return result;
 	}
+
+	//Tel* FindVal(Tel* node, std::string ichar) {
+	//	while (node != NULL) {
+	//		if (node->first != NULL) {
+	//			if (node->text == ichar)
+	//				return node;
+	//			FindVal(node->first, ichar);
+	//		}
+	//		node = node->next;
+	//	}
+	//}
 	void Print(Tel* node) {
 		Tel* iel = node;
 		if (iel != NULL && iel->next->text == "(") {
@@ -500,7 +800,7 @@ public:
 };
 
 int main() {
-	STR prog = "c = 0; MAIN{a = 1 b = 2 print(a+b)}";
+	STR prog = "c = 0; MAIN{a = 1 b = 2 c = 6  print(c + (a-b))}";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
