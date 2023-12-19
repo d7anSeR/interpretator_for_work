@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <string>
+#include <cstring>
 
 using namespace std;
 typedef string STR;
@@ -9,12 +10,14 @@ std::map<unsigned, std::string> TokenType
 {
 	{1, "DIGIT_INT"}, {2, "DIGIT_DOUBLE"} , {3, "WORD"}, {4, "SIGN"}
 };
-
+class Parser;
 class Lexer;
 class Tel {
 	STR text = "";
 	STR result = "";
 	STR token_type;
+	STR value;
+	bool fun_flag = false;
 	Tel* parent = NULL;
 	Tel* pre = NULL;
 	Tel* next = NULL;
@@ -91,64 +94,130 @@ public:
 			next_elem = mel;
 		}
 	}
+	void Print(Tel* el, string elem) {
+		Tel* iel = el;
+		while (iel != NULL) {
+			std::cout << elem << iel->text << " - " << iel->token_type << endl;
+			if (iel->first != NULL)
+				Print(iel->first, elem + "    ");
+			iel = iel->next;
+		}
+	}
 
 };
 class Parser {
 private:
 	Tel* cur;
 public:
-	Parser() {}
+	friend class Tel;
+	Parser(Tel* cur) : cur(cur) {}
 	void Operation(Tel* node) {
 		try {
-			if (node->first != NULL) {
+			if (node->first != NULL && node->first->first != NULL) {
 				Operation(node->first);
 			}
-			if (node->next != NULL) {
-				Operation(node->next);
+			if (node->first != NULL && node->first->next != NULL && node->first->next->first != NULL) {
+				Operation(node->first->next);
 			}
-			if (node->first == NULL) {
-
-				if (node->first->token_type == "DIGIT_INT" && node->first->next->token_type == "DIGIT_INT")
+			if (node->first != NULL) {
+				if (node->first->next != NULL)
 				{
-					if (node->text == "^")
-						node->result = to_string(pow(stoi(node->first->text), stoi(node->first->next->text)));
-					if (node->text == "%")
-						node->result = to_string(stoi(node->first->text) % stoi(node->first->next->text));
-					if (node->text == "*")
-						node->result = to_string(stoi(node->first->text) * stoi(node->first->next->text));
-					if (node->text == "/" && stoi(node->first->next->text) != 0)
-						node->result = to_string(stoi(node->first->text) / stoi(node->first->next->text));
-					if (node->text == "+")
-						node->result = to_string(stoi(node->first->text) + stoi(node->first->next->text));
-					if (node->text == "-")
-						node->result = to_string(stoi(node->first->text) - stoi(node->first->next->text));
-					node->token_type = "DIGIT_INT";
+					if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+						Tel* tmp_node = cur;
+						Tel* result_first = FindVal(tmp_node, node->first->text);
+						Tel* result_second = FindVal(tmp_node, node->first->next->text);
+						if (result_first != NULL && result_second != NULL) {
+							if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+								if (node->text == "^")
+									node->text = to_string(pow(stoi(result_first->text), stoi(result_second->text)));
+								if (node->text == "%")
+									node->text = to_string(stoi(result_first->text) % stoi(result_second->text));
+								if (node->text == "*")
+									node->text = to_string(stoi(result_first->text) * stoi(result_second->text));
+								if (node->text == "/" && stoi(result_second->text) != 0)
+									node->text = to_string(stoi(result_first->text) / stoi(result_second->text));
+								if (node->text == "+")
+									node->text = to_string(stoi(result_first->text) + stoi(result_second->text));
+								if (node->text == "-")
+									node->text = to_string(stoi(result_first->text) - stoi(result_second->text));
+								node->token_type = TokenType[1];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+							else if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+								(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+								(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])
+								) {
+								if (node->text == "^")
+									node->text = to_string(pow(stod(result_first->value), stod(result_second->value)));
+								if (node->text == "%")
+									node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
+								if (node->text == "*")
+									node->text = to_string(stod(result_first->value) * stod(result_second->value));
+								if (node->text == "/" && stoi(result_second->value) != 0)
+									node->text = to_string(stod(result_first->value) / stod(result_second->value));
+								if (node->text == "+")
+									node->text = to_string(stod(result_first->value) + stod(result_second->value));
+								if (node->text == "-")
+									node->text = to_string(stod(result_first->value) - stod(result_second->value));
+								node->token_type = TokenType[2];
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+						}
+					}
+
+					else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[1])
+					{
+						if (node->text == "^")
+							node->text = to_string(pow(stoi(node->first->text), stoi(node->first->next->text)));
+						if (node->text == "%")
+							node->text = to_string(stoi(node->first->text) % stoi(node->first->next->text));
+						if (node->text == "*")
+							node->text = to_string(stoi(node->first->text) * stoi(node->first->next->text));
+						if (node->text == "/" && stoi(node->first->next->text) != 0)
+							node->text = to_string(stoi(node->first->text) / stoi(node->first->next->text));
+						if (node->text == "+")
+							node->text = to_string(stoi(node->first->text) + stoi(node->first->next->text));
+						if (node->text == "-")
+							node->text = to_string(stoi(node->first->text) - stoi(node->first->next->text));
+						node->token_type = TokenType[1];
+						node->first->next->Delete();
+						node->first->Delete();
+					}
+					else if ((node->first->token_type == TokenType[2] && node->first->next->token_type == TokenType[2]) ||
+						(node->first->token_type == TokenType[2] && node->first->next->token_type == TokenType[1]) ||
+						(node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[2])
+						) {
+						if (node->text == "^")
+							node->text = to_string(pow(stod(node->first->text), stod(node->first->next->text)));
+						if (node->text == "%")
+							node->text = to_string(stoi(node->first->text) % stoi(node->first->next->text));
+						if (node->text == "*")
+							node->text = to_string(stod(node->first->text) * stod(node->first->next->text));
+						if (node->text == "/")
+							node->text = to_string(stod(node->first->text) / stod(node->first->next->text));
+						if (node->text == "+")
+							node->text = to_string(stod(node->first->text) + stod(node->first->next->text));
+						if (node->text == "-")
+							node->text = to_string(stod(node->first->text) - stod(node->first->next->text));
+						node->token_type = TokenType[2];
+						node->first->next->Delete();
+						node->first->Delete();
+					}
+					else if (node->first->text == "(") {
+						Runs(node);
+						node->token_type = node->first->token_type;
+						node->result = node->first->result;
+					}
+					else
+						throw std::string{ "an attempt was made to perform an operation with numbers on other data types..." };
 				}
-				else if ((node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_DOUBLE") ||
-					(node->first->token_type == "DIGIT_DOUBLE" && node->first->next->token_type == "DIGIT_INT") ||
-					(node->first->token_type == "DIGIT_INT" && node->first->next->token_type == "DIGIT_DOUBLE")
-					) {
-					if (node->text == "^")
-						node->result = to_string(pow(stod(node->first->text), stod(node->first->next->text)));
-					if (node->text == "%")
-						node->result = to_string(stoi(node->first->text) % stoi(node->first->next->text));
-					if (node->text == "*")
-						node->result = to_string(stod(node->first->text) * stod(node->first->next->text));
-					if (node->text == "/")
-						node->result = to_string(stod(node->first->text) / stod(node->first->next->text));
-					if (node->text == "+")
-						node->result = to_string(stod(node->first->text) + stod(node->first->next->text));
-					if (node->text == "-")
-						node->result = to_string(stod(node->first->text) - stod(node->first->next->text));
-					node->token_type = "DIGIT_DOUBLE";
-				}
-				else if (node->text == "(") {
-					Runs(node);
+				else if (node->text == "(" && node->first != NULL && node->first->next == NULL) {
+					node->text = node->first->text;
 					node->token_type = node->first->token_type;
-					node->result = node->first->result;
+					node->first->Delete();
 				}
-				else
-					throw std::string{ "an attempt was made to perform an operation with numbers on other data types..." };
 			}
 			else
 				throw std::string{ "an attempt was made to access the NULL pointer..." };
@@ -158,16 +227,83 @@ public:
 		}
 
 	}
+	Tel* FindVal(Tel* node, std::string ichar) {
+		Tel* elem = node->first;
+		if (elem != NULL) {
+			while (elem != NULL) {
+				Tel* elem_s = elem;
+				while (elem_s != NULL) {
+					if (elem_s->text == ichar)
+						return elem_s;
+					elem_s = elem_s->first;
+				}
+				elem_s = elem;
+				while (elem_s != NULL) {
+					if (elem_s->text == ichar)
+						return elem_s;
+					elem_s = elem_s->next;
+
+				}
+				elem = elem->next;
+			}
+		}
+	}
 	void Print(Tel* node) {
-		Tel* iel = node->first;
+		Tel* iel = node;
 		if (iel != NULL && iel->next->text == "(") {
 			Runs(iel->next);
 			Tel* elem = NULL;
 			if (iel->next != NULL) elem = iel->next->first;
 			while (elem != NULL) {
-				cout << elem->result;
+				cout << elem->text;
 				elem = elem->next;
 			}
+		}
+
+	}
+	void Entrance(Tel* node) {
+		Tel* elem = node;
+		if (elem != NULL) {
+			std::string result = "";
+			if (elem->next != NULL) {
+				for (int i = 0; i < (elem->next->text).length(); i++)
+					result += tolower(elem->next->text[i]);
+				if (result == "main" && elem->next->next->text == "{")
+				{
+					MainFunc(elem->next->next);
+				}
+			}
+			if (elem->first != NULL)
+				Entrance(elem->first);
+		}
+		if (node->next != NULL)
+			Entrance(node->next);
+	}
+	void MainFunc(Tel* node) {
+		Tel* elem = node;
+		if (elem->first != NULL) {
+			if (elem->first->first != NULL) {
+				MainFunc(elem->first);
+			}
+			if (elem->first->next != NULL && elem->first->next->first != NULL) {
+				MainFunc(elem->first->next);
+			}
+			std::string result = "";
+			for (int i = 0; i < (elem->text).length(); i++)
+				result += tolower(elem->text[i]);
+			if (result == "=") {
+				if (elem->first->token_type == TokenType[3] && (elem->first->next->token_type == TokenType[1] ||
+					elem->first->next->token_type == TokenType[2])) {
+					elem->value = elem->first->next->text;
+					elem->text = elem->first->text;
+					elem->token_type = elem->first->next->token_type;
+				}
+			}
+		}
+		if (elem->next != NULL) {
+			if (elem->next->text == "print")
+				Print(elem->next);
+			MainFunc(elem->next);
 		}
 
 	}
@@ -177,16 +313,14 @@ public:
 			Operation(elem);
 			elem = elem->next;
 		}
-
 	}
-
 };
 class Lexer {
 private:
 	int curr_pos = 0;
 	string curr_str = "";
-	friend class Parser;
 public:
+	friend class Parser;
 	Lexer(int curr_pos = 0, string curr_str = "") : curr_pos(curr_pos), curr_str(curr_str) {}
 	bool CheckLetter(char ichar) {
 		if ((ichar >= 'a' && ichar <= 'z') || (ichar >= 'A' && ichar <= 'Z') || ichar == '_')
@@ -246,7 +380,8 @@ public:
 				(temp_sign == "/") && (curr_str[curr_pos + 1] != '=') ||
 				(temp_sign == "*") && (curr_str[curr_pos + 1] != '=') ||
 				(temp_sign == "%") ||
-				(temp_sign == ";")
+				(temp_sign == ";") ||
+				(temp_sign == ",")
 				) {
 				result = temp_sign;
 				curr_pos += 1;
@@ -280,7 +415,6 @@ public:
 	}
 
 	Tel* ReadWordTel(const string& istr) {
-		curr_pos = 0;
 		curr_str = istr;
 		int len = istr.length();
 		Tel* result = new Tel();
@@ -296,22 +430,33 @@ public:
 		}
 		return result;
 	}
-	void Print(Tel* el, string elem) {
-		Tel* iel = el;
-		while (iel != NULL) {
-			std::cout << elem << iel->text << " - " << iel->token_type << endl;
-			if (iel->first != NULL)
-				Print(iel->first, elem + "    ");
-			iel = iel->next;
-		}
-	}
-	void ParamInFunc(Tel* iel, char ichar) {
+
+	void BlockInFunc(Tel* iel) {
 		Tel* next_elem_first = iel->first;
 		while (next_elem_first != NULL) {
 			Tel* next_elem_second = next_elem_first->first;
 			while (next_elem_second != NULL) {
 				if (next_elem_second->token_type == TokenType[1])
-					if ((next_elem_second->next != NULL) && (next_elem_second->next->text[0] == ichar))
+				{
+					if ((next_elem_second->next != NULL) && (next_elem_second->next->text[0] == '{'))
+					{
+						next_elem_second->fun_flag = true;
+						next_elem_second->Add(next_elem_second->next);
+					}
+				}
+				next_elem_second = next_elem_second->first;
+			}
+			next_elem_first = next_elem_first->next;
+
+		}
+	}
+	void ParamInFunc(Tel* iel) {
+		Tel* next_elem_first = iel->first;
+		while (next_elem_first != NULL) {
+			Tel* next_elem_second = next_elem_first->first;
+			while (next_elem_second != NULL) {
+				if (next_elem_second->token_type == TokenType[1])
+					if ((next_elem_second->next != NULL) && (next_elem_second->next->text[0] == '('))
 						next_elem_second->Add(next_elem_second->next);
 				next_elem_second = next_elem_second->first;
 			}
@@ -319,10 +464,6 @@ public:
 
 		}
 	}
-	//void SignIn(Tel* iel) {
-	//	Tel* tmp = iel;
-	//	SignIn_(tmp);
-	//}
 	void SignInFirst(Tel* iel) {
 		Tel* elem = iel->first;
 		while (elem != NULL) {
@@ -348,7 +489,7 @@ public:
 	void AssignmentIn(Tel* iel) {
 		Tel* elem = iel->first;
 		while (elem != NULL) {
-			if (elem->next != NULL && elem->pre != NULL && (elem->text == ":=")) {
+			if (elem->next != NULL && elem->pre != NULL && (elem->text == "=")) {
 				elem->Add(elem->pre);
 				elem->Add(elem->next);
 			}
@@ -359,18 +500,19 @@ public:
 };
 
 int main() {
-	STR prog = "print( 1 + 2 * 3)";
+	STR prog = "c = 0; MAIN{a = 1 b = 2 print(a+b)}";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
 	pro->Brackets('(', ')');
 	pro->Brackets('{', '}');
-	lexer.ParamInFunc(pro, '(');
-	lexer.ParamInFunc(pro, '{');
+	lexer.ParamInFunc(pro);
+	lexer.BlockInFunc(pro);
 	lexer.SignInFirst(pro);
 	lexer.SignInSecond(pro);
 	lexer.AssignmentIn(pro);
-	Parser parser;
-	parser.Print(pro);
+	pro->Print(pro, " ");
 	/*lexer.Print(pro, " ");*/
+	Parser parser(pro);
+	parser.Entrance(pro);
 }
