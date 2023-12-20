@@ -122,7 +122,7 @@ public:
 
 
 
-		if (node->first != NULL) {
+		else if (node->first != NULL) {
 			if (node->first->next != NULL)
 			{
 				if (node->text == "^")
@@ -626,11 +626,19 @@ public:
 					}
 				}
 			}
-			else if (node->text == "(" && node->first != NULL && node->first->next == NULL) {
+			else if (node->pre->text == "print" && node->text == "(" && node->first != NULL && node->first->token_type == TokenType[3] && node->first->next == NULL) {
+				Tel* tmp_node = cur;
+				Tel* result = FindVal(tmp_node, node->first->text);
+				if (result != NULL && result->token_type != TokenType[4]) {
+					node->first->text = result->value;
+					node->first->token_type = result->token_type;
+				}
+			}
+			/*else if (node->pre->text != "print" &&  node->text == "(" && node->first != NULL && node->first->next == NULL) {
 				node->text = node->first->text;
 				node->token_type = node->first->token_type;
 				node->first->Delete();
-			}
+			}*/
 		}
 
 
@@ -638,17 +646,18 @@ public:
 	Tel* FindVal(Tel* node, std::string ichar) {
 		Tel* result = NULL;
 		while (node != NULL) {
-			if (node->first != NULL) {
-				if (node->text == ichar) {
-					result = node;
-					break;
-				}
-				else {
+			if (node->text == ichar) {
+				result = node;
+				break;
+			}
+			else {
+				if (node->first != NULL) {
 					result = FindVal(node->first, ichar);
 					if (result != NULL) {
 						break;
 					}
 				}
+
 			}
 			node = node->next;
 		}
@@ -668,7 +677,7 @@ public:
 	//}
 	void Print(Tel* node) {
 		Tel* iel = node;
-		if (iel != NULL && iel->next->text == "(") {
+		if (iel->next->text == "(") {
 			Runs(iel->next);
 			Tel* elem = NULL;
 			if (iel->next != NULL) elem = iel->next->first;
@@ -716,6 +725,16 @@ public:
 					elem->value = elem->first->next->text;
 					elem->text = elem->first->text;
 					elem->token_type = elem->first->next->token_type;
+					elem->first->next->Delete();
+					elem->first->Delete();
+				}
+				else if (elem->first->token_type == TokenType[3] && elem->first->next->token_type == TokenType[4]) {
+					Runs(elem->first->next);
+					elem->value = elem->first->next->text;
+					elem->text = elem->first->text;
+					elem->token_type = elem->first->next->token_type;
+					elem->first->next->Delete();
+					elem->first->Delete();
 				}
 			}
 		}
@@ -726,17 +745,26 @@ public:
 				if (elem->next->next != NULL)
 					MainFunc(elem->next->next);
 			}
-
 			else
 				MainFunc(elem->next);
 		}
 
 	}
 	void Runs(Tel* node) {
-		Tel* elem = node->first;
-		while (elem != NULL) {
-			Operation(elem);
-			elem = elem->next;
+		if (node->pre == NULL)
+		{
+			Tel* elem = node->first;
+			while (elem != NULL) {
+				Operation(elem);
+				elem = elem->next;
+			}
+		}
+		else {
+			Tel* elem = node;
+			while (elem != NULL) {
+				Operation(elem);
+				elem = elem->next;
+			}
 		}
 	}
 };
@@ -925,7 +953,7 @@ public:
 };
 
 int main() {
-	STR prog = "c = 0; MAIN{a=4 b = 2*a c = 6 d = 2 print(b) print(2^2 + 3*1*d)}";
+	STR prog = "c = 0; MAIN{a=4 d = 2  b = a / d c = 6 print(b) print(2^2 + 3*1*d)}";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
