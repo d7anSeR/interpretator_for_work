@@ -67,6 +67,7 @@ public:
 		if (istr != "") {
 			result = new Tel();
 			result->text = istr;
+			result->value = istr;
 			result->token_type = type;
 			Add(result);
 		}
@@ -911,6 +912,10 @@ public:
 	}
 	void MainFunc(Tel* node) {
 		Tel* elem = node;
+		std::string tmp_result = "";
+		for (int i = 0; i < (elem->text).length(); i++)
+			tmp_result += tolower(elem->text[i]);
+		elem->text = tmp_result;
 		if (elem->first != NULL) {
 			if (elem->first->first != NULL) {
 				MainFunc(elem->first);
@@ -923,6 +928,7 @@ public:
 			std::string result = "";
 			for (int i = 0; i < (elem->text).length(); i++)
 				result += tolower(elem->text[i]);
+			elem->text = result;
 			if (result == "=") {
 				if (elem->first->token_type == TokenType[3] && (elem->first->next->token_type == TokenType[1] ||
 					elem->first->next->token_type == TokenType[2])) {
@@ -958,13 +964,242 @@ public:
 
 			}
 		}
-		if (elem->next != NULL) {
+		if (tmp_result == "if") {
+			if (elem->next->first->first->token_type == TokenType[3] && elem->next->first->first->next->token_type == TokenType[3]) {
+				Tel* tmp_node = cur;
+				Tel* result_first = FindVal(tmp_node, elem->next->first->first->text);
+				Tel* result_second = FindVal(tmp_node, elem->next->first->first->next->text);
+				if (result_first != NULL && result_second != NULL) {
+					if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+						if (elem->next->first->text == "<") {
+							if (stoi(result_first->value) < stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">") {
+							if (stoi(result_first->value) > stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "<=") {
+							if (stoi(result_first->value) <= stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">=") {
+							if (stoi(result_first->value) >= stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "!=") {
+							if (stoi(result_first->value) != stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "==") {
+							if (stoi(result_first->value) == stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+					}
+
+					if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+						(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+						(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
+						if (elem->next->first->text == "<") {
+							if (stod(result_first->value) < stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">") {
+							if (stod(result_first->value) > stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "<=") {
+							if (stod(result_first->value) <= stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">=") {
+							if (stod(result_first->value) >= stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "!=") {
+							if (stod(result_first->value) != stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "==") {
+							if (stod(result_first->value) == stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+					}
+				}
+
+			}
+			if ((elem->next->first->first->token_type == TokenType[1] || elem->next->first->first->token_type == TokenType[2]) && elem->next->first->first->next->token_type == TokenType[3]) {
+				Tel* tmp_node = cur;
+				Tel* result_first = elem->next->first->first;
+				Tel* result_second = FindVal(tmp_node, elem->next->first->first->next->text);
+				if (result_first != NULL && result_second != NULL) {
+					if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+						if (elem->next->first->text == "<") {
+							if (stoi(result_first->value) < stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">") {
+							if (stoi(result_first->value) > stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "<=") {
+							if (stoi(result_first->value) <= stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">=") {
+							if (stoi(result_first->value) >= stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "!=") {
+							if (stoi(result_first->value) != stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "==") {
+							if (stoi(result_first->value) == stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+					}
+
+					if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+						(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+						(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
+						if (elem->next->first->text == "<") {
+							if (stod(result_first->value) < stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">") {
+							if (stod(result_first->value) > stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "<=") {
+							if (stod(result_first->value) <= stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">=") {
+							if (stod(result_first->value) >= stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "!=") {
+							if (stod(result_first->value) != stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "==") {
+							if (stod(result_first->value) == stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+					}
+				}
+
+			}
+			if (elem->next->first->first->token_type == TokenType[3] && (elem->next->first->first->next->token_type == TokenType[1] || elem->next->first->first->next->token_type == TokenType[2])) {
+				Tel* tmp_node = cur;
+				Tel* result_first = FindVal(tmp_node, elem->next->first->first->text);
+				Tel* result_second = elem->next->first->first->next;
+				if (result_first != NULL && result_second != NULL) {
+					if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+						if (elem->next->first->text == "<") {
+							if (stoi(result_first->value) < stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">") {
+							if (stoi(result_first->value) > stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "<=") {
+							if (stoi(result_first->value) <= stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">=") {
+							if (stoi(result_first->value) >= stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "!=") {
+							if (stoi(result_first->value) != stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "==") {
+							if (stoi(result_first->value) == stoi(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+					}
+
+					if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+						(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+						(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
+						if (elem->next->first->text == "<") {
+							if (stod(result_first->value) < stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">") {
+							if (stod(result_first->value) > stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "<=") {
+							if (stod(result_first->value) <= stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == ">=") {
+							if (stod(result_first->value) >= stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "!=") {
+							if (stod(result_first->value) != stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+						else if (elem->next->first->text == "==") {
+							if (stod(result_first->value) == stod(result_second->value)) {
+								MainFunc(elem->next->next);
+							}
+						}
+					}
+				}
+
+			}
+		}
+		else if (elem->next != NULL) {
 			if (elem->next->text == "print" && elem->next->fun_flag == false) {
 				Print(elem->next);
 				elem->next->fun_flag = true;
 				if (elem->next->next->next != NULL)
 					MainFunc(elem->next->next->next);
 			}
+			else if (elem->next->first != NULL)
+				MainFunc(elem->next->first);
 			else
 				MainFunc(elem->next);
 		}
@@ -1149,6 +1384,17 @@ public:
 			elem = elem->next;
 		}
 	}
+	void SignÑomparison(Tel* iel) {
+		Tel* elem = iel->first;
+		while (elem != NULL) {
+			if (elem->next != NULL && elem->pre != NULL && ((elem->text == "<") || (elem->text == ">") || (elem->text == "<=") || (elem->text == ">=") || (elem->text == "==") || (elem->text == "!="))) {
+				elem->Add(elem->pre);
+				elem->Add(elem->next);
+			}
+			if (elem->first != NULL) SignÑomparison(elem);
+			elem = elem->next;
+		}
+	}
 	void AssignmentIn(Tel* iel) {
 		Tel* elem = iel->first;
 		while (elem != NULL) {
@@ -1163,7 +1409,7 @@ public:
 };
 
 int main() {
-	STR prog = "c = 0; MAIN{b = 2  print(((b + 3) ^2) % 1) print(2^((2 + 1)*1*b))}";
+	STR prog = "c = 0; MAIN{b = 2  if(b < 0){ print(1) }}";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
@@ -1174,6 +1420,7 @@ int main() {
 	lexer.SignInFirst(pro);
 	lexer.SignInSecond(pro);
 	lexer.AssignmentIn(pro);
+	lexer.SignÑomparison(pro);
 	pro->Print(pro, " ");
 	/*lexer.Print(pro, " ");*/
 	Parser parser(pro);
