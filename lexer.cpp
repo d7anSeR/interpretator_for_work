@@ -1,4 +1,4 @@
-#include <map>
+ï»¿#include <map>
 #include <iostream>
 #include <math.h>
 #include <string>
@@ -45,16 +45,16 @@ public:
 		last = last->next;
 		return last;
 	}
-	Tel* Delete() { // Óäàëÿåò ýëåìåíò èç ñïèñêà 
+	Tel* Delete() { // Ã“Ã¤Ã Ã«Ã¿Ã¥Ã² Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã¨Ã§ Ã±Ã¯Ã¨Ã±ÃªÃ  
 
-		if (parent != 0) // Åñëè óäàëÿåìûé ýëåìåíò ÿâëÿåòüñÿ ïîñëåäíèì â ñïèñêå 
+		if (parent != 0) // Ã…Ã±Ã«Ã¨ Ã³Ã¤Ã Ã«Ã¿Ã¥Ã¬Ã»Ã© Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã¿Ã¢Ã«Ã¿Ã¥Ã²Ã¼Ã±Ã¿ Ã¯Ã®Ã±Ã«Ã¥Ã¤Ã­Ã¨Ã¬ Ã¢ Ã±Ã¯Ã¨Ã±ÃªÃ¥ 
 			if (parent->last == this) parent->last = pre;
 
-		if (parent != 0) // Åñëè óäàëÿåìûé ýëåìåíò ÿâëÿåòüñÿ Ïåðâûì â ñïèñêå 
+		if (parent != 0) // Ã…Ã±Ã«Ã¨ Ã³Ã¤Ã Ã«Ã¿Ã¥Ã¬Ã»Ã© Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã¿Ã¢Ã«Ã¿Ã¥Ã²Ã¼Ã±Ã¿ ÃÃ¥Ã°Ã¢Ã»Ã¬ Ã¢ Ã±Ã¯Ã¨Ã±ÃªÃ¥ 
 			if (parent->first == this) parent->first = next;
 
-		if (pre != 0) pre->next = next;// Îòñîåäåíÿåì îò ïðåäûäûùåãî 
-		if (next != 0) next->pre = pre;// Îòñîåäåíÿåì îò ñëåäóþùåãî 
+		if (pre != 0) pre->next = next;// ÃŽÃ²Ã±Ã®Ã¥Ã¤Ã¥Ã­Ã¿Ã¥Ã¬ Ã®Ã² Ã¯Ã°Ã¥Ã¤Ã»Ã¤Ã»Ã¹Ã¥Ã£Ã® 
+		if (next != 0) next->pre = pre;// ÃŽÃ²Ã±Ã®Ã¥Ã¤Ã¥Ã­Ã¿Ã¥Ã¬ Ã®Ã² Ã±Ã«Ã¥Ã¤Ã³Ã¾Ã¹Ã¥Ã£Ã® 
 
 		next = 0;
 		pre = 0;
@@ -667,114 +667,117 @@ public:
 
 				if (node->first != NULL) {
 					if (node->first->next != NULL) {
-						if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
-							Tel* tmp_node = cur;
-							Tel* result_first = FindVal(tmp_node, node->first->text);
-							Tel* result_second = FindVal(tmp_node, node->first->next->text);
-							if (result_first != NULL && result_second != NULL) {
-								if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
-									if (node->text == "^")
-										node->text = to_string(pow(stoi(result_first->value), stoi(result_second->value)));
-									if (node->text == "%")
-										node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
-									if (node->text == "*")
-										node->text = to_string(stoi(result_first->value) * stoi(result_second->value));
-									if (node->text == "/" && stod(result_second->value) != 0)
-										node->text = to_string(stod(result_first->value) / stod(result_second->value));
-									if (node->text == "+")
-										node->text = to_string(stoi(result_first->value) + stoi(result_second->value));
-									if (node->text == "-")
-										node->text = to_string(stoi(result_first->value) - stoi(result_second->value));
-									if (node->text.find('.')) node->token_type = TokenType[2];
-									else node->token_type = TokenType[1];
-									node->value = node->text;
-									node->first->next->Delete();
-									node->first->Delete();
-								}
-								else if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
-									(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
-									(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])
-									) {
-									if (node->text == "^")
-										node->text = to_string(pow(stod(result_first->value), stod(result_second->value)));
-									if (node->text == "%")
-										node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
-									if (node->text == "*")
-										node->text = to_string(stod(result_first->value) * stod(result_second->value));
-									if (node->text == "/" && stod(result_second->value) != 0)
-										node->text = to_string(stod(result_first->value) / stod(result_second->value));
-									if (node->text == "+")
-										node->text = to_string(stod(result_first->value) + stod(result_second->value));
-									if (node->text == "-")
-										node->text = to_string(stod(result_first->value) - stod(result_second->value));
-									node->value = node->text;
-									node->token_type = TokenType[2];
-									node->first->next->Delete();
-									node->first->Delete();
-								}
-								if (node->pre != NULL)
-									node = node->pre;
-								else if (node->parent != NULL)
-								{
-									node = node->parent;
+						if (node->text != "==" && node->text != "!=" && node->text != "<=" && node->text != ">=" && node->text != ">" && node->text != "<") {
+							if (node->first->token_type == TokenType[3] && node->first->next->token_type == TokenType[3]) {
+								Tel* tmp_node = cur;
+								Tel* result_first = FindVal(tmp_node, node->first->text);
+								Tel* result_second = FindVal(tmp_node, node->first->next->text);
+								if (result_first != NULL && result_second != NULL) {
+									if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+										if (node->text == "^")
+											node->text = to_string(pow(stoi(result_first->value), stoi(result_second->value)));
+										if (node->text == "%")
+											node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
+										if (node->text == "*")
+											node->text = to_string(stoi(result_first->value) * stoi(result_second->value));
+										if (node->text == "/" && stod(result_second->value) != 0)
+											node->text = to_string(stod(result_first->value) / stod(result_second->value));
+										if (node->text == "+")
+											node->text = to_string(stoi(result_first->value) + stoi(result_second->value));
+										if (node->text == "-")
+											node->text = to_string(stoi(result_first->value) - stoi(result_second->value));
+										if (node->text.find('.')) node->token_type = TokenType[2];
+										else node->token_type = TokenType[1];
+										node->value = node->text;
+										node->first->next->Delete();
+										node->first->Delete();
+									}
+									else if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+										(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+										(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])
+										) {
+										if (node->text == "^")
+											node->text = to_string(pow(stod(result_first->value), stod(result_second->value)));
+										if (node->text == "%")
+											node->text = to_string(stoi(result_first->value) % stoi(result_second->value));
+										if (node->text == "*")
+											node->text = to_string(stod(result_first->value) * stod(result_second->value));
+										if (node->text == "/" && stod(result_second->value) != 0)
+											node->text = to_string(stod(result_first->value) / stod(result_second->value));
+										if (node->text == "+")
+											node->text = to_string(stod(result_first->value) + stod(result_second->value));
+										if (node->text == "-")
+											node->text = to_string(stod(result_first->value) - stod(result_second->value));
+										node->value = node->text;
+										node->token_type = TokenType[2];
+										node->first->next->Delete();
+										node->first->Delete();
+									}
 									if (node->pre != NULL)
 										node = node->pre;
 									else if (node->parent != NULL)
+									{
 										node = node->parent;
+										if (node->pre != NULL)
+											node = node->pre;
+										else if (node->parent != NULL)
+											node = node->parent;
+									}
+								}
+							}
+
+							else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[1])
+							{
+								if (node->text == "^")
+									node->text = to_string(pow(stoi(node->first->text), stoi(node->first->next->text)));
+								if (node->text == "%")
+									node->text = to_string(stoi(node->first->text) % stoi(node->first->next->text));
+								if (node->text == "*")
+									node->text = to_string(stoi(node->first->text) * stoi(node->first->next->text));
+								if (node->text == "/" && stod(node->first->next->text) != 0)
+									node->text = to_string(stod(node->first->text) / stod(node->first->next->text));
+								if (node->text == "+")
+									node->text = to_string(stoi(node->first->text) + stoi(node->first->next->text));
+								if (node->text == "-")
+									node->text = to_string(stoi(node->first->text) - stoi(node->first->next->text));
+								if (node->text.find('.')) node->token_type = TokenType[2];
+								else node->token_type = TokenType[1];
+								node->value = node->text;
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+							else if ((node->first->token_type == TokenType[2] && node->first->next->token_type == TokenType[2]) ||
+								(node->first->token_type == TokenType[2] && node->first->next->token_type == TokenType[1]) ||
+								(node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[2])
+								) {
+								if (node->text == "^")
+									node->text = to_string(pow(stod(node->first->text), stod(node->first->next->text)));
+								if (node->text == "%")
+									node->text = to_string(stoi(node->first->text) % stoi(node->first->next->text));
+								if (node->text == "*")
+									node->text = to_string(stod(node->first->text) * stod(node->first->next->text));
+								if (node->text == "/" && stod(node->first->next->text) != 0)
+									node->text = to_string(stod(node->first->text) / stod(node->first->next->text));
+								if (node->text == "+")
+									node->text = to_string(stod(node->first->text) + stod(node->first->next->text));
+								if (node->text == "-")
+									node->text = to_string(stod(node->first->text) - stod(node->first->next->text));
+								node->token_type = TokenType[2];
+								node->value = node->text;
+								node->first->next->Delete();
+								node->first->Delete();
+							}
+							else if (node->first != NULL) {
+								if (node->first->text == "(") {
+									Runs(node);
+									/*if (node->first != NULL) {
+										node->token_type = node->first->token_type;
+										node->result = node->first->result;
+									}*/
 								}
 							}
 						}
 
-						else if (node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[1])
-						{
-							if (node->text == "^")
-								node->text = to_string(pow(stoi(node->first->text), stoi(node->first->next->text)));
-							if (node->text == "%")
-								node->text = to_string(stoi(node->first->text) % stoi(node->first->next->text));
-							if (node->text == "*")
-								node->text = to_string(stoi(node->first->text) * stoi(node->first->next->text));
-							if (node->text == "/" && stod(node->first->next->text) != 0)
-								node->text = to_string(stod(node->first->text) / stod(node->first->next->text));
-							if (node->text == "+")
-								node->text = to_string(stoi(node->first->text) + stoi(node->first->next->text));
-							if (node->text == "-")
-								node->text = to_string(stoi(node->first->text) - stoi(node->first->next->text));
-							if (node->text.find('.')) node->token_type = TokenType[2];
-							else node->token_type = TokenType[1];
-							node->value = node->text;
-							node->first->next->Delete();
-							node->first->Delete();
-						}
-						else if ((node->first->token_type == TokenType[2] && node->first->next->token_type == TokenType[2]) ||
-							(node->first->token_type == TokenType[2] && node->first->next->token_type == TokenType[1]) ||
-							(node->first->token_type == TokenType[1] && node->first->next->token_type == TokenType[2])
-							) {
-							if (node->text == "^")
-								node->text = to_string(pow(stod(node->first->text), stod(node->first->next->text)));
-							if (node->text == "%")
-								node->text = to_string(stoi(node->first->text) % stoi(node->first->next->text));
-							if (node->text == "*")
-								node->text = to_string(stod(node->first->text) * stod(node->first->next->text));
-							if (node->text == "/" && stod(node->first->next->text) != 0)
-								node->text = to_string(stod(node->first->text) / stod(node->first->next->text));
-							if (node->text == "+")
-								node->text = to_string(stod(node->first->text) + stod(node->first->next->text));
-							if (node->text == "-")
-								node->text = to_string(stod(node->first->text) - stod(node->first->next->text));
-							node->token_type = TokenType[2];
-							node->value = node->text;
-							node->first->next->Delete();
-							node->first->Delete();
-						}
-						else if (node->first != NULL) {
-							if (node->first->text == "(") {
-								Runs(node);
-								/*if (node->first != NULL) {
-									node->token_type = node->first->token_type;
-									node->result = node->first->result;
-								}*/
-							}
-						}
 					}
 				}
 			}
@@ -826,7 +829,7 @@ public:
 						node->text = node->first->text;
 						node->value = node->first->value;
 						node->token_type = node->first->token_type;
-						node->first->Delete();
+						/*node->first->Delete();*/
 						if (node->pre != NULL)
 							node = node->pre;
 						else if (node->parent != NULL)
@@ -975,6 +978,8 @@ public:
 							if (stoi(result_first->value) < stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">") {
 							if (stoi(result_first->value) > stoi(result_second->value)) {
@@ -985,21 +990,29 @@ public:
 							if (stoi(result_first->value) <= stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">=") {
 							if (stoi(result_first->value) >= stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "!=") {
 							if (stoi(result_first->value) != stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "==") {
 							if (stoi(result_first->value) == stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 					}
 
@@ -1010,31 +1023,43 @@ public:
 							if (stod(result_first->value) < stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">") {
 							if (stod(result_first->value) > stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "<=") {
 							if (stod(result_first->value) <= stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">=") {
 							if (stod(result_first->value) >= stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "!=") {
 							if (stod(result_first->value) != stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "==") {
 							if (stod(result_first->value) == stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 					}
 				}
@@ -1050,31 +1075,43 @@ public:
 							if (stoi(result_first->value) < stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">") {
 							if (stoi(result_first->value) > stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "<=") {
 							if (stoi(result_first->value) <= stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">=") {
 							if (stoi(result_first->value) >= stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "!=") {
 							if (stoi(result_first->value) != stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "==") {
 							if (stoi(result_first->value) == stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 					}
 
@@ -1085,31 +1122,43 @@ public:
 							if (stod(result_first->value) < stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">") {
 							if (stod(result_first->value) > stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "<=") {
 							if (stod(result_first->value) <= stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">=") {
 							if (stod(result_first->value) >= stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "!=") {
 							if (stod(result_first->value) != stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "==") {
 							if (stod(result_first->value) == stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 					}
 				}
@@ -1125,31 +1174,43 @@ public:
 							if (stoi(result_first->value) < stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">") {
 							if (stoi(result_first->value) > stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "<=") {
 							if (stoi(result_first->value) <= stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">=") {
 							if (stoi(result_first->value) >= stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "!=") {
 							if (stoi(result_first->value) != stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "==") {
 							if (stoi(result_first->value) == stoi(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 					}
 
@@ -1160,31 +1221,43 @@ public:
 							if (stod(result_first->value) < stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">") {
 							if (stod(result_first->value) > stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "<=") {
 							if (stod(result_first->value) <= stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == ">=") {
 							if (stod(result_first->value) >= stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "!=") {
 							if (stod(result_first->value) != stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 						else if (elem->next->first->text == "==") {
 							if (stod(result_first->value) == stod(result_second->value)) {
 								MainFunc(elem->next->next);
 							}
+							else
+								MainFunc(elem->next->next->next);
 						}
 					}
 				}
@@ -1198,10 +1271,10 @@ public:
 				if (elem->next->next->next != NULL)
 					MainFunc(elem->next->next->next);
 			}
-			else if (elem->next->first != NULL)
-				MainFunc(elem->next->first);
-			else
+			else if (elem->next->text != "(")
 				MainFunc(elem->next);
+			else if (elem->next->next != NULL)
+				MainFunc(elem->next->next);
 		}
 
 	}
@@ -1384,14 +1457,14 @@ public:
 			elem = elem->next;
 		}
 	}
-	void SignÑomparison(Tel* iel) {
+	void SignComparison(Tel* iel) {
 		Tel* elem = iel->first;
 		while (elem != NULL) {
 			if (elem->next != NULL && elem->pre != NULL && ((elem->text == "<") || (elem->text == ">") || (elem->text == "<=") || (elem->text == ">=") || (elem->text == "==") || (elem->text == "!="))) {
 				elem->Add(elem->pre);
 				elem->Add(elem->next);
 			}
-			if (elem->first != NULL) SignÑomparison(elem);
+			if (elem->first != NULL) SignComparison(elem);
 			elem = elem->next;
 		}
 	}
@@ -1409,7 +1482,7 @@ public:
 };
 
 int main() {
-	STR prog = "c = 0; MAIN{b = 2  if(b < 0){ print(1) }}";
+	STR prog = " c = 0 MAIN{ a = 6 b = 2  print(a + b) if(a >= b) {print(1) print(2)} if(a == b){print(0)} print(11)}";
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
@@ -1420,11 +1493,10 @@ int main() {
 	lexer.SignInFirst(pro);
 	lexer.SignInSecond(pro);
 	lexer.AssignmentIn(pro);
-	lexer.SignÑomparison(pro);
+	lexer.SignComparison(pro);
 	pro->Print(pro, " ");
 	/*lexer.Print(pro, " ");*/
 	Parser parser(pro);
 	parser.Entrance(pro);
 	pro->Print(pro, " ");
 }
-
