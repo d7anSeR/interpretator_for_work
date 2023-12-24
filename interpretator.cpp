@@ -5,7 +5,8 @@
 #include <string>
 #include <cstring>
 #include <stack>
-
+#include <vector>
+#include <fstream>
 using namespace std;
 typedef string STR;
 std::map<unsigned, std::string> TokenType
@@ -111,9 +112,11 @@ public:
 class Parser {
 private:
 	Tel* cur;
+	std::vector<std::string> vec;
 public:
 	friend class Tel;
 	Parser(Tel* cur) : cur(cur) {}
+	std::vector<std::string> GetVec() { return vec; }
 	void Operation(Tel* node) {
 		if (node->first != NULL && node->first->first != NULL) {
 			Operation(node->first);
@@ -889,6 +892,7 @@ public:
 			Tel* elem = NULL;
 			if (iel->next != NULL) elem = iel->next->first;
 			while (elem != NULL) {
+				vec.push_back(elem->text);
 				cout << elem->text;
 				elem = elem->next;
 			}
@@ -1492,7 +1496,18 @@ public:
 };
 
 int main() {
-	STR prog = "  MAIN{ a = 6 b = 3 print((1+ b)^2) if(a > b) {print(1) print(2)} if(a != 6){print(0) print(9)} print(11)}";
+	std::string line;
+	std::string str = "";
+	std::ifstream in("C:\\Users\\Professional\\.vscode\\interpretator_for_work\\text_code.txt"); // окрываем файл для чтения
+	if (in.is_open())
+	{
+		while (std::getline(in, line))
+		{
+			str += line;
+		}
+	}
+	in.close();
+	STR prog = str;
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
 	pro->Brackets('[', ']');
@@ -1509,4 +1524,15 @@ int main() {
 	Parser parser(pro);
 	parser.Entrance(pro);
 	pro->Print(pro, " ");
+	std::ofstream out;          // поток для записи
+    out.open("text_out.txt");
+	std::vector<std::string> elem = parser.GetVec();      // открываем файл для записи
+    if (out.is_open())
+    {
+		for(auto i : elem){
+			out << i << std::endl;
+		}
+    }
+    out.close(); 
+	return 0;
 }
