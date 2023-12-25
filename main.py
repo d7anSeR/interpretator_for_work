@@ -70,12 +70,14 @@ class MyWindow(QtWidgets.QMainWindow):
         The method displays an error window when 
         the number of launch attempts has exceeded the limit
         """
-        self.logger.info(f"number of launch attempts exceeded the allowed limit")
-        self.msg = QMessageBox() 
-        self.msg.setIcon(QMessageBox.Critical) 
-        self.msg.setText("ОШИБКА: Количество запусков превысило\n допустимо значение") 
-        self.msg.setWindowTitle("Critical MessageBox") 
-        self.msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel) 
+        self.logger.info(
+            f"number of launch attempts exceeded the allowed limit")
+        self.msg = QMessageBox()
+        self.msg.setIcon(QMessageBox.Critical)
+        self.msg.setText(
+            "ОШИБКА: Количество запусков превысило\n допустимо значение")
+        self.msg.setWindowTitle("Critical MessageBox")
+        self.msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         retval = self.msg.exec_()
 
     def create_logger(self) -> logging.LoggerAdapter:
@@ -92,7 +94,7 @@ class MyWindow(QtWidgets.QMainWindow):
         logger.addHandler(file)
         return logger
 
- 
+
 if __name__ == '__main__':
     try:
         app = QtWidgets.QApplication([])
