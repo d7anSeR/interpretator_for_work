@@ -1,5 +1,4 @@
-﻿
-#include <map>
+﻿#include <map>
 #include <iostream>
 #include <math.h>
 #include <string>
@@ -47,16 +46,16 @@ public:
 		last = last->next;
 		return last;
 	}
-	Tel* Delete() { // Óäàëÿåò ýëåìåíò èç ñïèñêà 
+	Tel* Delete() { 
 
-		if (parent != 0) // Åñëè óäàëÿåìûé ýëåìåíò ÿâëÿåòüñÿ ïîñëåäíèì â ñïèñêå 
+		if (parent != 0) 
 			if (parent->last == this) parent->last = pre;
 
-		if (parent != 0) // Åñëè óäàëÿåìûé ýëåìåíò ÿâëÿåòüñÿ Ïåðâûì â ñïèñêå 
+		if (parent != 0) 
 			if (parent->first == this) parent->first = next;
 
-		if (pre != 0) pre->next = next;// Îòñîåäåíÿåì îò ïðåäûäûùåãî 
-		if (next != 0) next->pre = pre;// Îòñîåäåíÿåì îò ñëåäóþùåãî 
+		if (pre != 0) pre->next = next;
+		if (next != 0) next->pre = pre;
 
 		next = 0;
 		pre = 0;
@@ -114,6 +113,7 @@ private:
 	Tel* cur;
 	std::vector<std::string> vec;
 public:
+    friend class Lexer;
 	friend class Tel;
 	Parser(Tel* cur) : cur(cur) {}
 	std::vector<std::string> GetVec() { return vec; }
@@ -874,17 +874,6 @@ public:
 
 		return result;
 	}
-
-	//Tel* FindVal(Tel* node, std::string ichar) {
-	//	while (node != NULL) {
-	//		if (node->first != NULL) {
-	//			if (node->text == ichar)
-	//				return node;
-	//			FindVal(node->first, ichar);
-	//		}
-	//		node = node->next;
-	//	}
-	//}
 	void Print(Tel* node) {
 		Tel* iel = node;
 		if (iel->next->text == "(") {
@@ -892,8 +881,9 @@ public:
 			Tel* elem = NULL;
 			if (iel->next != NULL) elem = iel->next->first;
 			while (elem != NULL) {
-				vec.push_back(elem->text);
-				cout << elem->text;
+				if(elem->text[0] >= '0' && elem->text[0]<= '9'){
+					vec.push_back(elem->text);
+				}
 				elem = elem->next;
 			}
 			
@@ -967,14 +957,6 @@ public:
 						if (elem->next != NULL)
 							MainFunc(elem->next);
 					}
-					/*else if (elem->pre->text == "print" && elem->pre->fun_flag == true) {
-						if(elem->next != NULL) 
-							MainFunc(elem->next);
-						else if(elem->pre->pre != NULL)
-							MainFunc(elem->pre->pre);
-					}
-					else
-						MainFunc(elem->pre);*/
 				}
 
 			}
@@ -1496,17 +1478,22 @@ public:
 };
 
 int main() {
-	std::string line;
-	std::string str = "";
-	std::ifstream in("C:\\Users\\Professional\\.vscode\\interpretator_for_work\\text_code.txt"); // окрываем файл для чтения
-	if (in.is_open())
-	{
-		while (std::getline(in, line))
+	STR line;
+	STR str = "";
+	try{
+		std::ifstream in("C:\\Users\\Professional\\.vscode\\interpretator_for_work\\text_code.txt");
+		if (in.is_open())
 		{
-			str += line;
-		}
+			while (std::getline(in, line)){
+				str += line;
+			}
+			in.close();
+	    }
+		else throw "an error occurred while opening the file text_code.txt";
 	}
-	in.close();
+	catch(const char* error_message){
+		std::cout << error_message << endl;
+	}
 	STR prog = str;
 	Lexer lexer;
 	Tel* pro = lexer.ReadWordTel(prog);
@@ -1520,19 +1507,25 @@ int main() {
 	lexer.AssignmentIn(pro);
 	lexer.SignComparison(pro);
 	pro->Print(pro, " ");
-	/*lexer.Print(pro, " ");*/
 	Parser parser(pro);
 	parser.Entrance(pro);
 	pro->Print(pro, " ");
-	std::ofstream out;          // поток для записи
+	std::ofstream out; 
     out.open("text_out.txt");
-	std::vector<std::string> elem = parser.GetVec();      // открываем файл для записи
-    if (out.is_open())
-    {
-		for(auto i : elem){
-			out << i << std::endl;
-		}
-    }
-    out.close(); 
+	std::vector<std::string> elem = parser.GetVec();
+	try{
+		if (out.is_open())
+		{
+			for(auto i : elem){
+				out << i << std::endl;
+		    }
+			out.close();
+	    }
+		else throw "an error occurred while opening the file text_out.txt";
+	}
+	catch(const char* error_message){
+		std::cout << error_message << endl;
+	}
 	return 0;
 }
+//отладить сравнение 7 > 0(чисел)
