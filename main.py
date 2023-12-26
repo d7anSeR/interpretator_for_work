@@ -4,7 +4,7 @@ import sys
 import threading
 import time
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import *
 
 from myform import Ui_MainWindow
@@ -16,27 +16,21 @@ class MyWindow(QtWidgets.QMainWindow):
         Constructor for initializing variables
         """
         super(MyWindow, self).__init__()
-        self.thread = threading.Thread(target=self.check_app_runtime)
-        self.thread.start()
+        self.timer = QtCore.QTimer(self)
+        self.timer.setInterval(60000)
+        self.timer.timeout.connect(self.close_application)
+        self.timer.start()
+        self.show()
         self.logger = self.create_logger()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.count_click = 0
         self.ui.pushButton.clicked.connect(self.btn_check)
 
-    def check_app_runtime(self) -> None:
-        """
-        The method monitors the running time of 
-        the program and crashes it if the time exceeds 60 seconds
-        """
-        start_time = time.time()
-        while True:
-            current_time = time.time()
-            self.runtime = current_time - start_time
-            if self.runtime > 60:
-                self.logger.warning(
+    def close_application(self):
+        self.logger.warning(
                     f"The application's operating time has exceeded the allowed limit")
-            time.sleep(1)
+        QtWidgets.QApplication.quit()
 
     def btn_check(self) -> None:
         """
