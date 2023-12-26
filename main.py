@@ -1,8 +1,6 @@
 import logging
 import subprocess
 import sys
-import threading
-import time
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import *
@@ -17,7 +15,7 @@ class MyWindow(QtWidgets.QMainWindow):
         """
         super(MyWindow, self).__init__()
         self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(60000)
+        self.timer.setInterval(180000)
         self.timer.timeout.connect(self.close_application)
         self.timer.start()
         self.show()
