@@ -349,13 +349,13 @@ public:
 								node->text = to_string(stod(result_first->value) * stod(result_second->value));
 								node->token_type = TokenType[2];
 								node->value = node->text;
-								
+
 							}
 							else if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
 								node->text = to_string(stoi(result_first->value) * stoi(result_second->value));
 								node->token_type = TokenType[1];
 								node->value = node->text;
-								
+
 							}
 							node->first->next->Delete();
 							node->first->Delete();
@@ -381,7 +381,7 @@ public:
 								node->text = to_string(stod(node->first->text) * stod(result_first->value));
 								node->token_type = TokenType[2];
 								node->value = node->text;
-								
+
 							}
 							else if (result_first->token_type == TokenType[1] && node->first->token_type == TokenType[1]) {
 								node->text = to_string(stoi(node->first->text) * stoi(result_first->value));
@@ -412,7 +412,7 @@ public:
 								node->text = to_string(stod(result_first->value) * stod(node->first->next->text));
 								node->token_type = TokenType[2];
 								node->value = node->text;
-								
+
 							}
 							else if (node->first->next->token_type == TokenType[1] && result_first->token_type == TokenType[1]) {
 								node->text = to_string(stoi(result_first->value) * stoi(node->first->next->text));
@@ -465,7 +465,7 @@ public:
 					else if ((node->first->token_type == TokenType[1] || node->first->token_type == TokenType[2]) && node->first->next->token_type == TokenType[3]) {
 						Tel* tmp_node = cur;
 						Tel* result_first = FindVal(tmp_node, node->first->next->text);
-						if (result_first != NULL && stod(result_first->value) != 0 && 
+						if (result_first != NULL && stod(result_first->value) != 0 &&
 							(result_first->token_type == TokenType[1] || result_first->token_type == TokenType[2])) {
 							node->text = to_string(stod(node->first->text) / stod(result_first->value));
 							node->token_type = TokenType[2];
@@ -544,7 +544,7 @@ public:
 					else if ((node->first->token_type == TokenType[1] || node->first->token_type == TokenType[2]) && node->first->next->token_type == TokenType[3]) {
 						Tel* tmp_node = cur;
 						Tel* result_first = FindVal(tmp_node, node->first->next->text);
-						if (result_first != NULL && 
+						if (result_first != NULL &&
 							(result_first->token_type == TokenType[1] || result_first->token_type == TokenType[2])) {
 							if (result_first->token_type == TokenType[2] || node->first->token_type == TokenType[2]) {
 								node->text = to_string(stod(node->first->text) + stod(result_first->value));
@@ -573,7 +573,7 @@ public:
 					else if ((node->first->next->token_type == TokenType[1] || node->first->next->token_type == TokenType[2]) && node->first->token_type == TokenType[3]) {
 						Tel* tmp_node = cur;
 						Tel* result_first = FindVal(tmp_node, node->first->text);
-						if (result_first != NULL && 
+						if (result_first != NULL &&
 							(result_first->token_type == TokenType[1] || result_first->token_type == TokenType[2])) {
 							if (node->first->next->token_type == TokenType[2] || result_first->token_type == TokenType[2]) {
 								node->text = to_string(stod(result_first->value) + stod(node->first->next->text));
@@ -639,7 +639,7 @@ public:
 					else if ((node->first->token_type == TokenType[1] || node->first->token_type == TokenType[2]) && node->first->next->token_type == TokenType[3]) {
 						Tel* tmp_node = cur;
 						Tel* result_first = FindVal(tmp_node, node->first->next->text);
-						if (result_first != NULL && 
+						if (result_first != NULL &&
 							(result_first->token_type == TokenType[1] || result_first->token_type == TokenType[2])) {
 							if (result_first->token_type == TokenType[2] || node->first->token_type == TokenType[2]) {
 								node->text = to_string(stod(node->first->text) - stod(result_first->value));
@@ -803,10 +803,6 @@ public:
 							else if (node->first != NULL) {
 								if (node->first->text == "(") {
 									Runs(node);
-									/*if (node->first != NULL) {
-										node->token_type = node->first->token_type;
-										node->result = node->first->result;
-									}*/
 								}
 							}
 						}
@@ -822,7 +818,6 @@ public:
 						node->first->text = result->value;
 						node->first->token_type = result->token_type;
 						node->first->value = node->first->text;
-						result->Delete();
 						if (node->pre != NULL)
 							node = node->pre;
 						else if (node->parent != NULL)
@@ -835,7 +830,7 @@ public:
 						}
 					}
 				}
-				else if (node->pre->text != "print" && node->text == "(" && node->first != NULL && node->first->next == NULL) {
+				else if (node->pre->text != "print" && node->pre->text != "if" && node->text == "(" && node->first != NULL && node->first->next == NULL) {
 					if (node->first->first == NULL) {
 						node->text = node->first->text;
 						node->value = node->first->value;
@@ -864,7 +859,6 @@ public:
 						node->text = node->first->text;
 						node->value = node->first->value;
 						node->token_type = node->first->token_type;
-						/*node->first->Delete();*/
 						if (node->pre != NULL)
 							node = node->pre;
 						else if (node->parent != NULL)
@@ -877,8 +871,6 @@ public:
 						}
 					}
 				}
-				/*else
-					Runs(node);*/
 			}
 		}
 
@@ -944,410 +936,418 @@ public:
 	void MainFunc(Tel* node) {
 		Tel* elem = node;
 		std::string tmp_result = "";
-		for (int i = 0; i < (elem->text).length(); i++)
-			tmp_result += tolower(elem->text[i]);
-		elem->text = tmp_result;
-		if (elem->first != NULL) {
-			if (elem->first->first != NULL) {
-				MainFunc(elem->first);
-			}
-			else if (elem->first->next != NULL) {
-				if (elem->first->next->first != NULL) {
-					MainFunc(elem->first->next);
-				}
-			}
-			std::string result = "";
+		if (elem != NULL) {
 			for (int i = 0; i < (elem->text).length(); i++)
-				result += tolower(elem->text[i]);
-			elem->text = result;
-			if (result == "=") {
-				if (elem->first->token_type == TokenType[3] && (elem->first->next->token_type == TokenType[1] ||
-					elem->first->next->token_type == TokenType[2])) {
-					elem->value = elem->first->next->text;
-					elem->text = elem->first->text;
-					elem->token_type = elem->first->next->token_type;
-					elem->first->next->Delete();
-					elem->first->Delete();
+				tmp_result += tolower(elem->text[i]);
+			elem->text = tmp_result;
+			if (elem->first != NULL) {
+				if (elem->first->first != NULL) {
+					MainFunc(elem->first);
 				}
-				else if (elem->first->token_type == TokenType[3] && elem->first->next->token_type == TokenType[4]) {
+				else if (elem->first->next != NULL) {
+					if (elem->first->next->first != NULL) {
+						MainFunc(elem->first->next);
+					}
+				}
+				std::string result = "";
+				for (int i = 0; i < (elem->text).length(); i++)
+					result += tolower(elem->text[i]);
+				elem->text = result;
+				if (result == "=") {
+					if (elem->first->token_type == TokenType[3] && (elem->first->next->token_type == TokenType[1] ||
+						elem->first->next->token_type == TokenType[2])) {
+						elem->value = elem->first->next->text;
+						elem->text = elem->first->text;
+						elem->token_type = elem->first->next->token_type;
+						elem->first->next->Delete();
+						elem->first->Delete();
+					}
+					else if (elem->first->token_type == TokenType[3] && elem->first->next->token_type == TokenType[4]) {
+						Runs(elem);
+						elem->value = elem->first->next->text;
+						elem->text = elem->first->text;
+						elem->token_type = elem->first->next->token_type;
+						elem->first->next->Delete();
+						elem->first->Delete();
+					}
+				}
+				if (result == "^" || result == "%" || result == "*" || result == "/" || result == "+" || result == "-") {
 					Runs(elem);
-					elem->value = elem->first->next->text;
-					elem->text = elem->first->text;
-					elem->token_type = elem->first->next->token_type;
-					elem->first->next->Delete();
-					elem->first->Delete();
+				}
+				if (result == "(") {
+					if (elem->pre != NULL) {
+						if (elem->pre->text == "print" && elem->pre->fun_flag == false) {
+							elem->pre->fun_flag = true;
+							Print(elem->pre);
+							if (elem->next != NULL)
+								MainFunc(elem->next);
+						}
+					}
+
 				}
 			}
-			if (result == "^" || result == "%" || result == "*" || result == "/" || result == "+" || result == "-") {
-				Runs(elem);
-			}
-			if (result == "(") {
-				if (elem->pre != NULL) {
-					if (elem->pre->text == "print" && elem->pre->fun_flag == false) {
-						elem->pre->fun_flag = true;
-						Print(elem->pre);
-						if (elem->next != NULL)
-							MainFunc(elem->next);
+			if (tmp_result == "if") {
+				if (elem->next->first->first->token_type == TokenType[3] && elem->next->first->first->next->token_type == TokenType[3]) {
+					Tel* tmp_node = cur;
+					Tel* result_first = FindVal(tmp_node, elem->next->first->first->text);
+					Tel* result_second = FindVal(tmp_node, elem->next->first->first->next->text);
+					if (result_first != NULL && result_second != NULL) {
+						if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+							if (elem->next->first->text == "<") {
+								if (stoi(result_first->value) < stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">") {
+								if (stoi(result_first->value) > stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+							}
+							else if (elem->next->first->text == "<=") {
+								if (stoi(result_first->value) <= stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">=") {
+								if (stoi(result_first->value) >= stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "!=") {
+								if (stoi(result_first->value) != stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "==") {
+								if (stoi(result_first->value) == stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+						}
+
+						if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+							(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+							(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
+							if (elem->next->first->text == "<") {
+								if (stod(result_first->value) < stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">") {
+								if (stod(result_first->value) > stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "<=") {
+								if (stod(result_first->value) <= stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">=") {
+								if (stod(result_first->value) >= stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "!=") {
+								if (stod(result_first->value) != stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "==") {
+								if (stod(result_first->value) == stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+						}
+					}
+
+				}
+				if ((elem->next->first->first->token_type == TokenType[1] || elem->next->first->first->token_type == TokenType[2]) && elem->next->first->first->next->token_type == TokenType[3]) {
+					Tel* tmp_node = cur;
+					Tel* result_first = elem->next->first->first;
+					Tel* result_second = FindVal(tmp_node, elem->next->first->first->next->text);
+					if (result_first != NULL && result_second != NULL) {
+						if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+							if (elem->next->first->text == "<") {
+								if (stoi(result_first->value) < stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">") {
+								if (stoi(result_first->value) > stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "<=") {
+								if (stoi(result_first->value) <= stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">=") {
+								if (stoi(result_first->value) >= stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "!=") {
+								if (stoi(result_first->value) != stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "==") {
+								if (stoi(result_first->value) == stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+						}
+
+						if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+							(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+							(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
+							if (elem->next->first->text == "<") {
+								if (stod(result_first->value) < stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">") {
+								if (stod(result_first->value) > stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "<=") {
+								if (stod(result_first->value) <= stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">=") {
+								if (stod(result_first->value) >= stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "!=") {
+								if (stod(result_first->value) != stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "==") {
+								if (stod(result_first->value) == stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+						}
+					}
+
+				}
+				if (elem->next->first->first->token_type == TokenType[3] && (elem->next->first->first->next->token_type == TokenType[1] || elem->next->first->first->next->token_type == TokenType[2])) {
+					Tel* tmp_node = cur;
+					Tel* result_first = FindVal(tmp_node, elem->next->first->first->text);
+					Tel* result_second = elem->next->first->first->next;
+					if (result_first != NULL && result_second != NULL) {
+						if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
+							if (elem->next->first->text == "<") {
+								if (stoi(result_first->value) < stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">") {
+								if (stoi(result_first->value) > stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "<=") {
+								if (stoi(result_first->value) <= stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">=") {
+								if (stoi(result_first->value) >= stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "!=") {
+								if (stoi(result_first->value) != stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "==") {
+								if (stoi(result_first->value) == stoi(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+						}
+
+						if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
+							(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
+							(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
+							if (elem->next->first->text == "<") {
+								if (stod(result_first->value) < stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">") {
+								if (stod(result_first->value) > stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "<=") {
+								if (stod(result_first->value) <= stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == ">=") {
+								if (stod(result_first->value) >= stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "!=") {
+								if (stod(result_first->value) != stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+							else if (elem->next->first->text == "==") {
+								if (stod(result_first->value) == stod(result_second->value)) {
+									MainFunc(elem->next->next);
+								}
+								else
+									MainFunc(elem->next->next->next);
+							}
+						}
+					}
+
+				}
+				if ((elem->next->first->first->token_type == TokenType[1] || elem->next->first->first->token_type == TokenType[2]) &&
+					(elem->next->first->first->next->token_type == TokenType[1] || elem->next->first->first->next->token_type == TokenType[2])) {
+					if (elem->next->first->text == "<") {
+						if (stod(elem->next->first->first->value) < stod(elem->next->first->first->next->value)) {
+							MainFunc(elem->next->next);
+						}
+						else
+							MainFunc(elem->next->next->next);
+					}
+					else if (elem->next->first->text == ">") {
+						if (stod(elem->next->first->first->value) > stod(elem->next->first->first->next->value)) {
+							MainFunc(elem->next->next);
+						}
+						else
+							MainFunc(elem->next->next->next);
+					}
+					else if (elem->next->first->text == "<=") {
+						if (stod(elem->next->first->first->value) <= stod(elem->next->first->first->next->value)) {
+							MainFunc(elem->next->next);
+						}
+						else
+							MainFunc(elem->next->next->next);
+					}
+					else if (elem->next->first->text == ">=") {
+						if (stod(elem->next->first->first->value) >= stod(elem->next->first->first->next->value)) {
+							MainFunc(elem->next->next);
+						}
+						else
+							MainFunc(elem->next->next->next);
+					}
+					else if (elem->next->first->text == "!=") {
+						if (stod(elem->next->first->first->value) != stod(elem->next->first->first->next->value)) {
+							MainFunc(elem->next->next);
+						}
+						else
+							MainFunc(elem->next->next->next);
+					}
+					else if (elem->next->first->text == "==") {
+						if (stod(elem->next->first->first->value) == stod(elem->next->first->first->next->value)) {
+							MainFunc(elem->next->next);
+						}
+						else
+							MainFunc(elem->next->next->next);
 					}
 				}
-
 			}
-		}
-		if (tmp_result == "if") {
-			if (elem->next->first->first->token_type == TokenType[3] && elem->next->first->first->next->token_type == TokenType[3]) {
-				Tel* tmp_node = cur;
-				Tel* result_first = FindVal(tmp_node, elem->next->first->first->text);
-				Tel* result_second = FindVal(tmp_node, elem->next->first->first->next->text);
-				if (result_first != NULL && result_second != NULL) {
-					if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
-						if (elem->next->first->text == "<") {
-							if (stoi(result_first->value) < stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">") {
-							if (stoi(result_first->value) > stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-						}
-						else if (elem->next->first->text == "<=") {
-							if (stoi(result_first->value) <= stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">=") {
-							if (stoi(result_first->value) >= stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "!=") {
-							if (stoi(result_first->value) != stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "==") {
-							if (stoi(result_first->value) == stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-					}
-
-					if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
-						(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
-						(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
-						if (elem->next->first->text == "<") {
-							if (stod(result_first->value) < stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">") {
-							if (stod(result_first->value) > stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "<=") {
-							if (stod(result_first->value) <= stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">=") {
-							if (stod(result_first->value) >= stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "!=") {
-							if (stod(result_first->value) != stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "==") {
-							if (stod(result_first->value) == stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-					}
-				}
-
-			}
-			if ((elem->next->first->first->token_type == TokenType[1] || elem->next->first->first->token_type == TokenType[2]) && elem->next->first->first->next->token_type == TokenType[3]) {
-				Tel* tmp_node = cur;
-				Tel* result_first = elem->next->first->first;
-				Tel* result_second = FindVal(tmp_node, elem->next->first->first->next->text);
-				if (result_first != NULL && result_second != NULL) {
-					if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
-						if (elem->next->first->text == "<") {
-							if (stoi(result_first->value) < stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">") {
-							if (stoi(result_first->value) > stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "<=") {
-							if (stoi(result_first->value) <= stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">=") {
-							if (stoi(result_first->value) >= stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "!=") {
-							if (stoi(result_first->value) != stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "==") {
-							if (stoi(result_first->value) == stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-					}
-
-					if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
-						(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
-						(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
-						if (elem->next->first->text == "<") {
-							if (stod(result_first->value) < stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">") {
-							if (stod(result_first->value) > stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "<=") {
-							if (stod(result_first->value) <= stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">=") {
-							if (stod(result_first->value) >= stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "!=") {
-							if (stod(result_first->value) != stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "==") {
-							if (stod(result_first->value) == stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-					}
-				}
-
-			}
-			if (elem->next->first->first->token_type == TokenType[3] && (elem->next->first->first->next->token_type == TokenType[1] || elem->next->first->first->next->token_type == TokenType[2])) {
-				Tel* tmp_node = cur;
-				Tel* result_first = FindVal(tmp_node, elem->next->first->first->text);
-				Tel* result_second = elem->next->first->first->next;
-				if (result_first != NULL && result_second != NULL) {
-					if (result_first->token_type == TokenType[1] && result_second->token_type == TokenType[1]) {
-						if (elem->next->first->text == "<") {
-							if (stoi(result_first->value) < stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">") {
-							if (stoi(result_first->value) > stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "<=") {
-							if (stoi(result_first->value) <= stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">=") {
-							if (stoi(result_first->value) >= stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "!=") {
-							if (stoi(result_first->value) != stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "==") {
-							if (stoi(result_first->value) == stoi(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-					}
-
-					if ((result_first->token_type == TokenType[2] && result_second->token_type == TokenType[2]) ||
-						(result_first->token_type == TokenType[2] && result_second->token_type == TokenType[1]) ||
-						(result_first->token_type == TokenType[1] && result_second->token_type == TokenType[2])) {
-						if (elem->next->first->text == "<") {
-							if (stod(result_first->value) < stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">") {
-							if (stod(result_first->value) > stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "<=") {
-							if (stod(result_first->value) <= stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == ">=") {
-							if (stod(result_first->value) >= stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "!=") {
-							if (stod(result_first->value) != stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-						else if (elem->next->first->text == "==") {
-							if (stod(result_first->value) == stod(result_second->value)) {
-								MainFunc(elem->next->next);
-							}
-							else
-								MainFunc(elem->next->next->next);
-						}
-					}
-				}
-
-			}
-			if ((elem->next->first->first->token_type == TokenType[1] || elem->next->first->first->token_type == TokenType[2]) &&
-				(elem->next->first->first->next->token_type == TokenType[1] || elem->next->first->first->next->token_type == TokenType[2])) {
-				if (elem->next->first->text == "<") {
-					if (stod(elem->next->first->first->value) < stod(elem->next->first->first->next->value)) {
-						MainFunc(elem->next->next);
-					}
-					else
+			else if (elem->next != NULL) {
+				if (elem->next->text == "print" && elem->next->fun_flag == false) {
+					elem->next->fun_flag = true;
+					Print(elem->next);
+					if (elem->next->next->next != NULL)
 						MainFunc(elem->next->next->next);
 				}
-				else if (elem->next->first->text == ">") {
-					if (stod(elem->next->first->first->value) > stod(elem->next->first->first->next->value)) {
+				else if (elem->text == "print" && elem->fun_flag == false) {
+					elem->fun_flag = true;
+					Print(elem);
+					if (elem->next->next != NULL)
 						MainFunc(elem->next->next);
-					}
-					else
-						MainFunc(elem->next->next->next);
 				}
-				else if (elem->next->first->text == "<=") {
-					if (stod(elem->next->first->first->value) <= stod(elem->next->first->first->next->value)) {
-						MainFunc(elem->next->next);
-					}
-					else
-						MainFunc(elem->next->next->next);
-				}
-				else if (elem->next->first->text == ">=") {
-					if (stod(elem->next->first->first->value) >= stod(elem->next->first->first->next->value)) {
-						MainFunc(elem->next->next);
-					}
-					else
-						MainFunc(elem->next->next->next);
-				}
-				else if (elem->next->first->text == "!=") {
-					if (stod(elem->next->first->first->value) != stod(elem->next->first->first->next->value)) {
-						MainFunc(elem->next->next);
-					}
-					else
-						MainFunc(elem->next->next->next);
-				}
-				else if (elem->next->first->text == "==") {
-					if (stod(elem->next->first->first->value) == stod(elem->next->first->first->next->value)) {
-						MainFunc(elem->next->next);
-					}
-					else
-						MainFunc(elem->next->next->next);
-				}
+				else if (elem->next->text != "(")
+					MainFunc(elem->next);
+				else if (elem->next->next != NULL)
+					MainFunc(elem->next->next);
+				else
+					MainFunc(elem->next);
 			}
-		}
-		else if (elem->next != NULL) {
-			if (elem->next->text == "print" && elem->next->fun_flag == false) {
-				elem->next->fun_flag = true;
-				Print(elem->next);
-				if (elem->next->next->next != NULL)
-					MainFunc(elem->next->next->next);
-			}
-			else if (elem->next->text != "(")
-				MainFunc(elem->next);
-			else if (elem->next->next != NULL)
-				MainFunc(elem->next->next);
-			else
-				MainFunc(elem->next);
 		}
 
 	}
@@ -1605,3 +1605,4 @@ int main() {
 	}
 	return 0;
 }
+//
