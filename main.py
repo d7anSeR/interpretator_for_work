@@ -27,9 +27,12 @@ class MyWindow(QtWidgets.QMainWindow):
         self.count_click = 0
         self.ui.pushButton.clicked.connect(self.btn_check)
 
-    def close_application(self):
+    def close_application(self) -> None:
+        """
+        The method closes the program window
+        """
         self.logger.warning(
-                    f"The application's operating time has exceeded the allowed limit")
+            f"The application's operating time has exceeded the allowed limit")
         QtWidgets.QApplication.quit()
 
     def btn_check(self) -> None:
